@@ -1,0 +1,51 @@
+// src/language/dashboardLanguage.js
+const dashboardLanguage = {
+  en: {
+    pageTitle: 'Dashboard',
+    month: 'Month',
+    quarter: 'Quarter',
+    year: 'Year',
+    fromDate: 'From Date',
+    toDate: 'To Date',
+    purchasedMilk: 'Purchased Milk',
+    soldMilk: 'Sold Milk',
+    profit: 'Profit',
+    cow: 'Cow',
+    buffalo: 'Buffalo',
+    soldMilkMonthWise: 'Sold Milk (Month Wise)',
+    months: {
+      jan: 'Jan',
+      feb: 'Feb',
+      mar: 'Mar',
+      apr: 'Apr',
+      may: 'May',
+      jun: 'Jun',
+    },
+    customDate: 'Custom Date',
+  },
+  mr: {
+    pageTitle: 'डॅशबोर्ड',
+    month: 'महिना',
+    quarter: 'तिमाही',
+    year: 'वर्ष',
+    fromDate: 'तारीख पासून',
+    toDate: 'तारीख पर्यंत',
+    purchasedMilk: 'खरेदी केलेले दूध',
+    soldMilk: 'विकलेले दूध',
+    profit: 'नफा',
+    cow: 'गायीचे',
+    buffalo: 'म्हशीचे',
+    soldMilkMonthWise: 'महिना निहाय विकलेले दूध',
+    months: {
+      jan: 'जाने',
+      feb: 'फेब्रु',
+      mar: 'मार्च',
+      apr: 'एप्रि',
+      may: 'मे',
+      jun: 'जून',
+    },
+    customDate: 'हवी ती तारीख',  
+  },
+};
+
+export default dashboardLanguage;

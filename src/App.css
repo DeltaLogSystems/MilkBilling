@@ -1,0 +1,307 @@
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+/* input[type="number"] {
+             
+        } */
+
+/* Date picker styling */
+input[type="date"] {
+  position: relative;
+  padding: 10px 40px 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background-color: white;
+  color: #1e293b;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  height: 40px;
+}
+
+.dark input[type="date"] {
+  background-color: rgb(30 41 59);
+  color: white;
+  border-color: #475569;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  filter: invert(0.5);
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: #0095c7;
+  box-shadow: 0 0 0 3px rgba(0, 149, 199, 0.1);
+}
+
+#customDatePicker {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  z-index: 50;
+}
+
+#customDatePickerMobile {
+  display: none;
+  margin-top: 12px;
+}
+
+.web-layout {
+  display: none;
+}
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .web-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .mobile-layout {
+    display: none;
+  }
+
+  .web-sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: white;
+    padding: 1.5rem;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .dark .web-sidebar {
+    background: rgb(30 41 59);
+  }
+
+  .web-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .web-main-header {
+    padding: 1.5rem;
+    padding-bottom: 1rem;
+    background: #f5f8f8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .dark .web-main-header {
+    background: #0f1e23;
+  }
+
+  .web-main-content {
+    flex: 1;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .web-main-content::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.customer-card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.dark .customer-card {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.stats-container {
+  background: rgba(0, 149, 199, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.stats-title {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.stats-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0095c7;
+}
+
+.sidebar-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 10px;
+  margin: 6px 0;
+  border-radius: 10px;
+  color: #64748b;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.sidebar-icon-item:hover {
+  background: rgba(0, 149, 199, 0.1);
+  color: #0095c7;
+}
+
+.sidebar-icon-item.active {
+  background: rgba(0, 149, 199, 0.15);
+  color: #0095c7;
+  font-weight: 600;
+}
+
+.sidebar-icon-item i {
+  font-size: 20px;
+}
+
+.sidebar-icon-item span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dark .sidebar-icon-item {
+  color: #94a3b8;
+}
+
+.dark .sidebar-icon-item:hover {
+  background: rgba(0, 149, 199, 0.2);
+  color: #0095c7;
+}
+
+.milk-type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.milk-type-cow {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.milk-type-buffalo {
+  background: rgba(251, 146, 60, 0.15);
+  color: #ea580c;
+}
+
+.dark .milk-type-cow {
+  background: rgba(34, 197, 94, 0.25);
+  color: #22c55e;
+}
+
+.dark .milk-type-buffalo {
+  background: rgba(251, 146, 60, 0.25);
+  color: #fb923c;
+}
+
+.customer-info-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tab_btn {
+  display: flex; /* flex */
+  height: 40px; /* h-10 */
+  flex: 1; /* flex-1 */
+  align-items: center; /* items-center */
+  justify-content: center; /* justify-center */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-size: 0.875rem; /* text-sm */
+  cursor: pointer;
+  transition: 0.2s ease all;
+}
+
+/* ACTIVE STATE → bg-primary text-white font-bold */
+.tab_btn.btn_active {
+  background-color: var(--primary); /* bg-primary */
+  color: #ffffff; /* text-white */
+  font-weight: 700; /* font-bold */
+}
+
+/* INACTIVE STATE → bg-primary/20 text-primary */
+.tab_btn.btn_inactive {
+  background-color: rgba(var(--primary-rgb), 0.2); /* bg-primary/20 */
+  color: var(--primary); /* text-primary */
+}
+
+img {
+  height: 25px;
+  width: 25px;
+}
+
+/* Mobile layout height set using CSS variable --vh to handle mobile browser chrome */
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  /* full visible viewport height: calc(var(--vh) * 100) */
+  min-height: calc(var(--vh, 1vh) * 100);
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden; /* inner scroll areas will control scrolling */
+}
+
+/* Scrollable content area (keeps footer visible) */
+.mobile-scroll-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6rem; /* enough to avoid footer overlap; adjust if footer height changes */
+}
+
+/* Footer height helper (make it explicit) */
+.mobile-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  height: 40px; /* set a consistent footer height */
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  /* keep same styling you had */
+}
+
+/* make sure cards don't overflow horizontally */
+.customer-card {
+  width: 100%;
+  box-sizing: border-box;
+}
