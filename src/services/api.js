@@ -10,6 +10,32 @@ const api = axios.create({
   },
 });
 
+// Request interceptor to add token
+api.interceptors.request.use(
+  (config) => {
+    const user = JSON.parse(localStorage.getItem("milkBillingUser"));
+    if (user && user.token) {
+      config.headers.Authorization = `Bearer ${user.token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle token expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("milkBillingUser");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Get userId from localStorage
 const getUserId = () => {
   const userData = localStorage.getItem("milkBillingUser");
@@ -33,19 +59,73 @@ api.interceptors.request.use((config) => {
 
 // Auth API
 export const authAPI = {
-  login: async (userName, password) => {
-    const response = await api.post("/Auth/login", { userName, password });
-    if (response.data.success) {
+  login: async (username, password) => {
+    const response = await api.post("/auth/login", {
+      userName: username,
+      password: password,
+    });
+
+    if (response.data.success && response.data.data) {
       localStorage.setItem(
         "milkBillingUser",
         JSON.stringify(response.data.data)
       );
     }
+
     return response.data;
   },
 
-  logout: () => {
-    localStorage.removeItem("milkBillingUser");
+  register: async (username, email, password, confirmPassword) => {
+    const response = await api.post("/auth/register", {
+      userName: username,
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+    });
+
+    if (response.data.success && response.data.data) {
+      localStorage.setItem(
+        "milkBillingUser",
+        JSON.stringify(response.data.data)
+      );
+    }
+
+    return response.data;
+  },
+
+  logout: async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("milkBillingUser");
+    }
+  },
+
+  validateToken: async () => {
+    const response = await api.get("/auth/validate");
+    return response.data;
+  },
+
+  getCurrentUser: () => {
+    return JSON.parse(localStorage.getItem("milkBillingUser"));
+  },
+
+  isAuthenticated: () => {
+    const user = JSON.parse(localStorage.getItem("milkBillingUser"));
+    if (!user || !user.token) return false;
+
+    // Check if token is expired
+    if (user.tokenExpiry) {
+      const expiry = new Date(user.tokenExpiry);
+      if (expiry < new Date()) {
+        localStorage.removeItem("milkBillingUser");
+        return false;
+      }
+    }
+
+    return true;
   },
 };
 
