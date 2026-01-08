@@ -18,6 +18,7 @@ function Settings() {
   const [loading, setLoading] = useState(false);
 
   // Customer form states
+  const [customerId, setCustomerId] = useState(0);
   const [customerName, setCustomerName] = useState("");
   const [whatsAppNo, setWhatsAppNo] = useState("");
   const [cowRate, setCowRate] = useState(55);
@@ -28,6 +29,10 @@ function Settings() {
   // Delete customer states
   const [deleteSearch, setDeleteSearch] = useState("");
   const [deleteCustomers, setDeleteCustomers] = useState([]);
+
+  // Add customer list for table display
+  const [customerList, setCustomerList] = useState([]);
+  const [customerSearch, setCustomerSearch] = useState("");
 
   // Collapsible sections
   const [rateOpen, setRateOpen] = useState(false);
@@ -99,9 +104,22 @@ function Settings() {
     }
   };
 
+  const loadCustomerList = async () => {
+    try {
+      const response = await customerAPI.getCustomers();
+      if (response.success) {
+        setCustomerList(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading customer list:", error);
+    }
+  };
+
   useEffect(() => {
     if (customerMode === "delete") {
       loadDeleteCustomers();
+    } else if (customerMode === "add") {
+      loadCustomerList();
     }
   }, [customerMode]);
 
@@ -113,6 +131,46 @@ function Settings() {
     [deleteSearch, deleteCustomers]
   );
 
+  const filteredCustomerList = useMemo(
+    () =>
+      customerList.filter(
+        (c) =>
+          c.customerName.toLowerCase().includes(customerSearch.toLowerCase()) ||
+          (c.whatsAppNo && c.whatsAppNo.includes(customerSearch))
+      ),
+    [customerSearch, customerList]
+  );
+
+  const resetCustomerForm = () => {
+    setCustomerId(0);
+    setCustomerName("");
+    setWhatsAppNo("");
+    setMilkType("Both");
+    setUseMasterRate(true);
+    setCowDefaultLiters(1);
+    setBuffaloDefaultLiters(0.5);
+  };
+
+  const handleEditCustomer = (customer) => {
+    setCustomerId(customer.customerId);
+    setCustomerName(customer.customerName);
+    setWhatsAppNo(customer.whatsAppNo || "");
+    setMilkType(
+      customer.milkType === 0
+        ? "Cow"
+        : customer.milkType === 1
+        ? "Buffalo"
+        : "Both"
+    );
+    setUseMasterRate(customer.useMasterRate);
+    setCowRate(customer.cowRate || masterCowRate);
+    setBuffaloRate(customer.buffaloRate || masterBuffaloRate);
+    setCowDefaultLiters(customer.cowDefaultLiters || 1);
+    setBuffaloDefaultLiters(customer.buffaloDefaultLiters || 0.5);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSaveCustomer = async () => {
     try {
       setLoading(true);
@@ -121,6 +179,7 @@ function Settings() {
         milkType === "Cow" ? 0 : milkType === "Buffalo" ? 1 : 2;
 
       const customerData = {
+        customerId,
         customerName,
         whatsAppNo: whatsAppNo || null,
         milkType: milkTypeEnum,
@@ -135,22 +194,36 @@ function Settings() {
         useMasterRate,
       };
 
-      const response = await customerAPI.addCustomer(customerData);
+      let response;
+      if (customerId === 0) {
+        response = await customerAPI.addCustomer(customerData);
+        if (response.success) {
+          alert("Customer added successfully!");
+        }
+      } else {
+        response = await customerAPI.updateCustomer(customerData);
+        if (response.success) {
+          alert("Customer updated successfully!");
+        }
+      }
 
       if (response.success) {
-        alert("Customer added successfully!");
-        // Reset form
-        setCustomerName("");
-        setWhatsAppNo("");
-        setMilkType("Both");
-        setUseMasterRate(true);
-        setCustomerMode("buttons");
+        resetCustomerForm();
+        loadCustomerList();
       } else {
-        alert("Failed to add customer. Please try again.");
+        alert(
+          `Failed to ${
+            customerId === 0 ? "add" : "update"
+          } customer. Please try again.`
+        );
       }
     } catch (error) {
-      console.error("Error adding customer:", error);
-      alert("Error adding customer. Please check your input.");
+      console.error("Error saving customer:", error);
+      alert(
+        `Error ${
+          customerId === 0 ? "adding" : "updating"
+        } customer. Please check your input.`
+      );
     } finally {
       setLoading(false);
     }
@@ -254,6 +327,10 @@ function Settings() {
     setLanguage(e.target.value);
   };
 
+  const handleCustomerSearchChange = (e) => {
+    setCustomerSearch(e.target.value);
+  };
+
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
@@ -310,7 +387,10 @@ function Settings() {
               <button
                 type="button"
                 className="bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition"
-                onClick={() => setCustomerMode("add")}
+                onClick={() => {
+                  setCustomerMode("add");
+                  resetCustomerForm();
+                }}
               >
                 <i className="fas fa-plus" />
                 <span>{text.addCustomer}</span>
@@ -463,16 +543,119 @@ function Settings() {
                   className="flex-1 bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition disabled:opacity-50"
                   onClick={handleSaveCustomer}
                 >
-                  {loading ? "Saving..." : text.saveCustomer}
+                  {loading
+                    ? "Saving..."
+                    : customerId === 0
+                    ? text.saveCustomer
+                    : "Update Customer"}
                 </button>
                 <button
                   type="button"
                   className="flex-1 bg-slate-500 hover:bg-slate-600 text-white font-semibold py-2.5 px-3 rounded-lg text-sm transition"
-                  onClick={() => setCustomerMode("buttons")}
+                  onClick={() => {
+                    setCustomerMode("buttons");
+                    resetCustomerForm();
+                  }}
                 >
                   {text.cancel}
                 </button>
               </div>
+
+              {/* Customer List Table with Search */}
+              {customerList.length > 0 && (
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                      Active Customers
+                    </h3>
+                  </div>
+
+                  {/* Search Box */}
+                  <div className="relative mb-4">
+                    <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-10 pr-4 text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      placeholder="Search customer by name or phone..."
+                      type="text"
+                      value={customerSearch}
+                      onChange={handleCustomerSearchChange}
+                    />
+                  </div>
+
+                  <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-600">
+                    <table className="w-full text-sm text-left">
+                      <thead className="text-xs uppercase bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                        <tr>
+                          <th className="px-4 py-3">Actions</th>
+                          <th className="px-4 py-3">Customer Name</th>
+                          <th className="px-4 py-3">WhatsApp No</th>
+                          <th className="px-4 py-3">Milk Type</th>
+                          <th className="px-4 py-3">Pending Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredCustomerList.length > 0 ? (
+                          filteredCustomerList.map((customer) => (
+                            <tr
+                              key={customer.customerId}
+                              className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition"
+                            >
+                              <td className="px-4 py-3">
+                                <button
+                                  type="button"
+                                  className="text-primary hover:text-[#007aa3] transition"
+                                  onClick={() => handleEditCustomer(customer)}
+                                  title="Edit Customer"
+                                >
+                                  <i className="fas fa-edit text-lg" />
+                                </button>
+                              </td>
+                              <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">
+                                {customer.customerName}
+                              </td>
+                              <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                {customer.whatsAppNo || "N/A"}
+                              </td>
+                              <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                                {customer.milkType === 0
+                                  ? "Cow"
+                                  : customer.milkType === 1
+                                  ? "Buffalo"
+                                  : "Cow + Buffalo"}
+                              </td>
+                              <td
+                                className={`px-4 py-3 font-bold ${
+                                  customer.pendingAmount > 0
+                                    ? "text-red-600"
+                                    : "text-green-600"
+                                }`}
+                              >
+                                ₹{customer.pendingAmount.toFixed(2)}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="5"
+                              className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
+                            >
+                              <i className="fas fa-search text-3xl mb-2 block" />
+                              <p>No customers found matching your search</p>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Results Count */}
+                  <div className="mt-3 text-sm text-slate-600 dark:text-slate-400">
+                    Showing {filteredCustomerList.length} of{" "}
+                    {customerList.length} customers
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

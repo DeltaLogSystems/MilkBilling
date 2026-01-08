@@ -65,24 +65,24 @@ function Bill() {
           toDate
         );
       }
-
+      console.log("Customer Bills Response:", response);
       if (response && response.success) {
         const billData = response.data.map((b) => ({
           id: b.customerId,
           name: b.customerName,
           currentBill: b.currentBill,
           pending: b.pendingAmount,
+          totalDue: b.totalDue, // ✅ ADD THIS
         }));
 
         setBills(billData);
 
         const paymentsInit = {};
         billData.forEach((c) => {
-          const totalDue = c.currentBill + c.pending;
           paymentsInit[c.id] = {
             fullPayment: false,
             amount: 0,
-            totalDue,
+            totalDue: c.totalDue, // ✅ USE API VALUE
           };
         });
         setPayments(paymentsInit);

@@ -34,6 +34,8 @@ function HomePage() {
   const [customers, setCustomers] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isHoliday, setIsHoliday] = useState(false);
+  const [savedQuantities, setSavedQuantities] = useState({});
 
   const today = useMemo(() => new Date(), []);
   const yesterday = useMemo(() => {
@@ -106,6 +108,10 @@ function HomePage() {
           newQty[entry.customerId] = entry.quantity;
         });
         setQuantities(newQty);
+
+        // Check if all quantities are 0 (holiday mode)
+        const allZero = Object.values(newQty).every((qty) => qty === 0);
+        setIsHoliday(allZero);
       } else {
         // Reset to defaults if no entries found
         const defaultQty = {};
@@ -113,6 +119,7 @@ function HomePage() {
           defaultQty[c.id] = c.defaultQty;
         });
         setQuantities(defaultQty);
+        setIsHoliday(false);
       }
     } catch (error) {
       console.error("Error loading daily entries:", error);
@@ -172,6 +179,31 @@ function HomePage() {
       setShowCustomPicker(true);
     } else {
       setShowCustomPicker(false);
+    }
+  };
+
+  const handleHolidayToggle = () => {
+    if (!isHoliday) {
+      // Entering holiday mode - save current quantities and set all to 0
+      setSavedQuantities({ ...quantities });
+      const zeroQty = {};
+      customers.forEach((c) => {
+        zeroQty[c.id] = 0;
+      });
+      setQuantities(zeroQty);
+      setIsHoliday(true);
+    } else {
+      // Exiting holiday mode - restore saved quantities or defaults
+      if (Object.keys(savedQuantities).length > 0) {
+        setQuantities({ ...savedQuantities });
+      } else {
+        const defaultQty = {};
+        customers.forEach((c) => {
+          defaultQty[c.id] = c.defaultQty;
+        });
+        setQuantities(defaultQty);
+      }
+      setIsHoliday(false);
     }
   };
 
@@ -303,6 +335,63 @@ function HomePage() {
               </div>
             </div>
           )}
+
+          {/* Holiday Mode Toggle - Compact Version */}
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-800 dark:to-slate-700 rounded-lg shadow-sm p-2 md:p-2.5 border border-orange-200 dark:border-orange-900/30 transition-all duration-300">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-all duration-300 ${
+                    isHoliday
+                      ? "bg-orange-500 shadow-md shadow-orange-500/40"
+                      : "bg-slate-300 dark:bg-slate-600"
+                  }`}
+                >
+                  <i
+                    className={`fas ${
+                      isHoliday ? "fa-umbrella-beach" : "fa-calendar-check"
+                    } text-white text-sm`}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs md:text-sm font-bold text-slate-800 dark:text-white leading-tight">
+                    Holiday Mode
+                  </span>
+                  <span className="text-[10px] md:text-xs text-slate-600 dark:text-slate-400 leading-tight">
+                    {isHoliday ? "All set to 0" : "Set all quantities to 0"}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={handleHolidayToggle}
+                className={`relative inline-flex h-7 w-12 md:h-8 md:w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
+                  isHoliday
+                    ? "bg-orange-500 shadow-md shadow-orange-500/30"
+                    : "bg-slate-300 dark:bg-slate-600"
+                }`}
+                role="switch"
+                aria-checked={isHoliday}
+                aria-label="Toggle holiday mode"
+              >
+                <span
+                  className={`inline-block h-5 w-5 md:h-6 md:w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                    isHoliday
+                      ? "translate-x-6 md:translate-x-7"
+                      : "translate-x-1"
+                  }`}
+                >
+                  <span className="flex items-center justify-center h-full">
+                    {isHoliday ? (
+                      <i className="fas fa-check text-orange-500 text-[10px]" />
+                    ) : (
+                      <i className="fas fa-times text-slate-400 text-[10px]" />
+                    )}
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -319,7 +408,9 @@ function HomePage() {
               {filteredCustomers.map((c) => (
                 <div
                   key={c.id}
-                  className="customer-card bg-white dark:bg-slate-800/60 rounded-xl shadow-md p-2 md:p-3"
+                  className={`customer-card bg-white dark:bg-slate-800/60 rounded-xl shadow-md p-2 md:p-3 transition-all duration-300 ${
+                    isHoliday ? "opacity-60 pointer-events-none" : ""
+                  }`}
                 >
                   <div className="flex items-center justify-between mb-0">
                     <p className="font-bold text-slate-900 dark:text-white text-sm md:text-base">
@@ -329,6 +420,7 @@ function HomePage() {
                       <button
                         onClick={() => handleDecrement(c.id, c.step)}
                         className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary"
+                        disabled={isHoliday}
                       >
                         <i className="fas fa-minus text-xs" />
                       </button>
@@ -343,10 +435,12 @@ function HomePage() {
                             [c.id]: Number(e.target.value) || 0,
                           }))
                         }
+                        disabled={isHoliday}
                       />
                       <button
                         onClick={() => handleIncrement(c.id, c.step)}
                         className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary"
+                        disabled={isHoliday}
                       >
                         <i className="fas fa-plus text-xs" />
                       </button>

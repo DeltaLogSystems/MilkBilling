@@ -147,6 +147,15 @@ export const customerAPI = {
     const response = await api.delete(`/Customer/${customerId}`);
     return response.data;
   },
+
+  updateCustomer: async (customerData) => {
+    const userId = getUserId();
+    const response = await axios.put(
+      `${API_BASE_URL}/Customer/${customerData.customerId}?userId=${userId}`,
+      customerData
+    );
+    return response.data;
+  },
 };
 
 // Daily Milk Entry API
