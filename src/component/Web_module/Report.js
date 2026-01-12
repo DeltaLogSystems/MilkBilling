@@ -4,6 +4,9 @@ import { useLanguage } from "../../context/LanguageContext";
 import reportLanguage from "../../language/reportLanguage";
 import { reportAPI } from "../../services/api";
 
+// ✅ CRITICAL: Store window reference OUTSIDE component to persist across renders
+let whatsappWindow = null;
+
 function Report() {
   const { language } = useLanguage();
   const text = reportLanguage[language];
@@ -18,6 +21,7 @@ function Report() {
   const [search, setSearch] = useState("");
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [sendingBillFor, setSendingBillFor] = useState(null); // ✅ Track which bill is being sent
 
   useEffect(() => {
     loadReports();
@@ -76,6 +80,7 @@ function Report() {
       }
     } catch (error) {
       console.error("Error loading reports:", error);
+      alert("Failed to load reports. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -105,17 +110,52 @@ function Report() {
     [search, reports]
   );
 
-  const handleSendReport = (customer) => {
-    const message = `Your pending amount is ₹${customer.pending} and current bill for this period is ₹${customer.currentBill}.`;
+  const handleSendReport = async (customer) => {
+    if (!customer.whatsappNo) {
+      alert(`No WhatsApp number available for ${customer.name}`);
+      return;
+    }
 
-    if (customer.whatsappNo) {
-      const phoneNumber = customer.whatsappNo.replace(/\D/g, "");
-      const whatsappUrl = `https://wa.me/91${phoneNumber}?text=${encodeURIComponent(
-        message
-      )}`;
-      window.open(whatsappUrl, "_blank");
-    } else {
-      alert(`Report for ${customer.name}:\n${message}`);
+    try {
+      setSendingBillFor(customer.id); // ✅ Show loading for specific customer
+
+      const response = await reportAPI.sendMonthlyBill(customer.id);
+
+      if (response && response.success && response.data) {
+        const whatsappUrl = response.data.whatsAppUrl;
+
+        if (whatsappUrl) {
+          // ✅ SOLUTION: Reuse existing WhatsApp tab or create new one
+          if (!whatsappWindow || whatsappWindow.closed) {
+            // Open new tab only if it doesn't exist or was closed
+            whatsappWindow = window.open(whatsappUrl, "WhatsAppBilling");
+          } else {
+            // Reuse existing tab - change URL and bring to focus
+            whatsappWindow.location.href = whatsappUrl;
+            whatsappWindow.focus();
+          }
+
+          // ✅ Success feedback without alert (better UX)
+          console.log(`Bill sent successfully for ${customer.name}`);
+        } else {
+          alert(
+            `Bill generated but WhatsApp URL not available for ${customer.name}`
+          );
+        }
+      } else {
+        alert(
+          `Failed to generate bill: ${response?.message || "Unknown error"}`
+        );
+      }
+    } catch (error) {
+      console.error("Error sending report:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to send report";
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setSendingBillFor(null); // ✅ Clear loading state
     }
   };
 
@@ -237,11 +277,18 @@ function Report() {
 
       <main className="flex-1 overflow-y-auto p-4 pt-0 pb-24 md:p-6 md:pt-0 md:pb-6">
         {loading ? (
-          <div className="text-center py-8">Loading...</div>
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="mt-2 text-slate-600 dark:text-slate-400">
+              Loading reports...
+            </p>
+          </div>
         ) : (
           <div className="grid gap-3 md:grid-cols-1 lg:grid-cols-2">
             {filteredReports.map((report) => {
               const totalDue = report.currentBill + report.pending;
+              const isSending = sendingBillFor === report.id;
+
               return (
                 <div
                   key={report.id}
@@ -273,10 +320,18 @@ function Report() {
                     </div>
                     <button
                       type="button"
-                      className="md:flex items-center justify-center gap-1 px-3 py-2 bg-primary rounded-lg text-white font-bold text-sm"
+                      className="md:flex items-center justify-center gap-1 px-3 py-2 bg-primary rounded-lg text-white font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => handleSendReport(report)}
+                      disabled={isSending}
                     >
-                      {text.sendReport}
+                      {isSending ? (
+                        <>
+                          <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></span>
+                          Sending...
+                        </>
+                      ) : (
+                        text.sendReport
+                      )}
                     </button>
                   </div>
                 </div>

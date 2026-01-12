@@ -130,6 +130,7 @@ export const authAPI = {
 };
 
 // Customer API
+// Customer API
 export const customerAPI = {
   getCustomers: async () => {
     const userId = getUserId();
@@ -139,32 +140,65 @@ export const customerAPI = {
 
   addCustomer: async (customerData) => {
     const userId = getUserId();
-    const response = await api.post(`/Customer?userId=${userId}`, customerData);
-    return response.data;
+    try {
+      const response = await api.post(
+        `/Customer?userId=${userId}`,
+        customerData
+      );
+      return response.data;
+    } catch (error) {
+      // Re-throw with better error structure
+      if (error.response?.data) {
+        throw error;
+      }
+      throw new Error("Failed to add customer");
+    }
   },
 
   deleteCustomer: async (customerId) => {
-    const response = await api.delete(`/Customer/${customerId}`);
-    return response.data;
+    const userId = getUserId();
+    try {
+      const response = await api.delete(
+        `/Customer/${customerId}?userId=${userId}`
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response?.data) {
+        throw error;
+      }
+      throw new Error("Failed to delete customer");
+    }
   },
 
   updateCustomer: async (customerData) => {
     const userId = getUserId();
-    const response = await axios.put(
-      `${API_BASE_URL}/Customer/${customerData.customerId}?userId=${userId}`,
-      customerData
-    );
-    return response.data;
+    try {
+      const response = await api.put(
+        `/Customer/${customerData.customerId}?userId=${userId}`,
+        customerData
+      );
+      return response.data;
+    } catch (error) {
+      if (error.response?.data) {
+        throw error;
+      }
+      throw new Error("Failed to update customer");
+    }
   },
 };
 
 // Daily Milk Entry API
 export const dailyMilkAPI = {
-  saveDailyEntries: async (entryDate, entries) => {
+  saveDailyEntries: async (entryDate, entries, isHoliday = false) => {
     const userId = getUserId();
+    const dateStr =
+      entryDate instanceof Date
+        ? entryDate.toISOString().split("T")[0]
+        : entryDate;
     const response = await api.post(`/DailyMilkEntry?userId=${userId}`, {
-      entryDate,
+      entryDate: dateStr,
       entries,
+      isHoliday, // Add holiday flag
     });
     return response.data;
   },
@@ -208,10 +242,14 @@ export const dairyInfoAPI = {
     return response.data;
   },
 
-  saveDairyInfo: async (dairyData) => {
+  saveDairyInfo: async (formData) => {
     const userId = getUserId();
-    const response = await api.post(`/DairyInfo?userId=${userId}`, dairyData);
-    return response.data;
+    const response = await api.post(`/DairyInfo?userId=${userId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data; // IMPORTANT
   },
 };
 
@@ -223,6 +261,12 @@ export const purchaseMilkAPI = {
       `/PurchaseMilk?userId=${userId}`,
       purchaseData
     );
+    return response.data;
+  },
+
+  getLast5DaysEntries: async () => {
+    const userId = getUserId();
+    const response = await api.get(`/PurchaseMilk/last5days?userId=${userId}`);
     return response.data;
   },
 };
@@ -251,6 +295,7 @@ export const dashboardAPI = {
 };
 
 // Report API
+// ✅ OPTIMIZED Report API with proper timeout handling
 export const reportAPI = {
   getCustomerBills: async (
     period,
@@ -261,7 +306,7 @@ export const reportAPI = {
     endDate
   ) => {
     const userId = getUserId();
-    const response = await api.post(`/Report?userId=${userId}`, {
+    const response = await api.post(`/Report/customer-bills?userId=${userId}`, {
       period,
       year,
       month,
@@ -270,6 +315,35 @@ export const reportAPI = {
       endDate,
     });
     return response.data;
+  },
+
+  sendMonthlyBill: async (customerId) => {
+    const userId = getUserId();
+    // ✅ Extended timeout for PDF generation
+    const response = await api.post(
+      `/Report/send-monthly-bill/${customerId}?userId=${userId}`,
+      {},
+      { timeout: 60000 } // 60 second timeout for this specific request
+    );
+    return response.data;
+  },
+
+  downloadBill: async (customerId) => {
+    const userId = getUserId();
+    const response = await api.get(
+      `/Report/download-bill/${customerId}?userId=${userId}`,
+      { responseType: "blob" }
+    );
+
+    const url = window.URL.createObjectURL(new Blob([response]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Bill_${customerId}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    return response;
   },
 };
 

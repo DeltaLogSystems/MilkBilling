@@ -45,16 +45,70 @@ function Settings() {
 
   // Dairy info states
   const [dairyName, setDairyName] = useState("");
+  const [dairyLogoFile, setDairyLogoFile] = useState(null);
+  const [qrFile, setQrFile] = useState(null);
 
   // Purchase entry states
+  // Purchase entry states
+  const [purchaseEntryId, setPurchaseEntryId] = useState(0);
   const [purchaseMilkType, setPurchaseMilkType] = useState(0);
   const [purchaseQty, setPurchaseQty] = useState("");
   const [purchaseRate, setPurchaseRate] = useState("");
+  const [purchaseEntryDate, setPurchaseEntryDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [purchaseEntries, setPurchaseEntries] = useState([]);
+
+  const [nameError, setNameError] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     loadMilkRates();
     loadDairyInfo();
   }, []);
+
+  // Clear name error when user types valid name
+  useEffect(() => {
+    if (customerName && customerName.trim().length >= 2) {
+      // Check if it's not a duplicate
+      const isDuplicate = customerList.some(
+        (c) =>
+          c.customerName.toLowerCase() === customerName.toLowerCase().trim() &&
+          c.customerId !== customerId
+      );
+
+      if (!isDuplicate) {
+        setNameError("");
+        setErrorMessage("");
+      } else {
+        setNameError("Customer with this name already exists");
+      }
+    } else if (customerName && customerName.trim().length < 2) {
+      setNameError("Customer name must be at least 2 characters");
+    } else if (!customerName || !customerName.trim()) {
+      setNameError("Customer name is required");
+    }
+  }, [customerName, customerList, customerId]);
+
+  // Clear whatsapp error when user types valid number
+  useEffect(() => {
+    if (whatsAppNo) {
+      const whatsappRegex = /^[6-9]\d{9}$/;
+      const cleanNumber = whatsAppNo.replace(/\D/g, "");
+
+      if (whatsappRegex.test(cleanNumber)) {
+        setWhatsappError("");
+        setErrorMessage("");
+      } else if (cleanNumber.length > 0) {
+        setWhatsappError(
+          "Enter valid 10-digit WhatsApp number (starting with 6-9)"
+        );
+      }
+    } else {
+      setWhatsappError(""); // Clear error if field is empty (optional field)
+    }
+  }, [whatsAppNo]);
 
   const loadMilkRates = async () => {
     try {
@@ -145,10 +199,17 @@ function Settings() {
     setCustomerId(0);
     setCustomerName("");
     setWhatsAppNo("");
-    setMilkType("Both");
-    setUseMasterRate(true);
+    setMilkType("Cow");
+    setCowRate(0);
+    setBuffaloRate(0);
     setCowDefaultLiters(1);
-    setBuffaloDefaultLiters(0.5);
+    setBuffaloDefaultLiters(1);
+    setUseMasterRate(true);
+
+    // Clear validation errors
+    setNameError("");
+    setWhatsappError("");
+    setErrorMessage("");
   };
 
   const handleEditCustomer = (customer) => {
@@ -173,6 +234,44 @@ function Settings() {
 
   const handleSaveCustomer = async () => {
     try {
+      // Clear previous errors
+      setNameError("");
+      setWhatsappError("");
+      setErrorMessage("");
+
+      // Client-side validation - Customer Name
+      if (!customerName?.trim()) {
+        setNameError("Customer name is required");
+        return;
+      }
+      if (customerName.trim().length < 2) {
+        setNameError("Customer name must be at least 2 characters");
+        return;
+      }
+
+      // Client-side validation - WhatsApp Number
+      if (whatsAppNo) {
+        const whatsappRegex = /^[6-9]\d{9}$/;
+        const cleanNumber = whatsAppNo.replace(/\D/g, "");
+        if (!whatsappRegex.test(cleanNumber)) {
+          setWhatsappError(
+            "Enter valid 10-digit WhatsApp number (starting with 6-9)"
+          );
+          return;
+        }
+      }
+
+      // Check for duplicate customer name (excluding current customer during edit)
+      const existingCustomer = customerList.find(
+        (c) =>
+          c.customerName.toLowerCase() === customerName.toLowerCase().trim() &&
+          c.customerId !== customerId
+      );
+      if (existingCustomer) {
+        setNameError("Customer with this name already exists");
+        return;
+      }
+
       setLoading(true);
 
       const milkTypeEnum =
@@ -180,8 +279,8 @@ function Settings() {
 
       const customerData = {
         customerId,
-        customerName,
-        whatsAppNo: whatsAppNo || null,
+        customerName: customerName.trim(),
+        whatsAppNo: whatsAppNo?.trim() || null,
         milkType: milkTypeEnum,
         cowRate: useMasterRate ? null : cowRate,
         buffaloRate: useMasterRate ? null : buffaloRate,
@@ -198,39 +297,46 @@ function Settings() {
       if (customerId === 0) {
         response = await customerAPI.addCustomer(customerData);
         if (response.success) {
-          alert("Customer added successfully!");
+          alert("✅ Customer added successfully!");
+          resetCustomerForm();
+          await loadCustomerList();
+          setCustomerMode("buttons");
+        } else {
+          setErrorMessage(response.message || "Failed to add customer");
         }
       } else {
         response = await customerAPI.updateCustomer(customerData);
         if (response.success) {
-          alert("Customer updated successfully!");
+          alert("✅ Customer updated successfully!");
+          resetCustomerForm();
+          await loadCustomerList();
+          setCustomerMode("buttons");
+        } else {
+          setErrorMessage(response.message || "Failed to update customer");
         }
-      }
-
-      if (response.success) {
-        resetCustomerForm();
-        loadCustomerList();
-      } else {
-        alert(
-          `Failed to ${
-            customerId === 0 ? "add" : "update"
-          } customer. Please try again.`
-        );
       }
     } catch (error) {
       console.error("Error saving customer:", error);
-      alert(
-        `Error ${
-          customerId === 0 ? "adding" : "updating"
-        } customer. Please check your input.`
-      );
+
+      // Handle server validation errors
+      if (error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage(
+          `Error ${
+            customerId === 0 ? "adding" : "updating"
+          } customer. Please check your input.`
+        );
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteCustomer = async (customer) => {
-    if (!window.confirm(`Are you sure you want to delete ${customer.name}?`)) {
+    if (
+      !window.confirm(`⚠️ Are you sure you want to delete ${customer.name}?`)
+    ) {
       return;
     }
 
@@ -239,14 +345,18 @@ function Settings() {
       const response = await customerAPI.deleteCustomer(customer.id);
 
       if (response.success) {
-        alert("Customer deleted successfully!");
-        loadDeleteCustomers();
+        alert("✅ Customer deleted successfully!");
+        await loadDeleteCustomers();
+        await loadCustomerList(); // Refresh main customer list too
       } else {
-        alert("Failed to delete customer.");
+        alert("❌ " + (response.message || "Failed to delete customer"));
       }
     } catch (error) {
       console.error("Error deleting customer:", error);
-      alert("Error deleting customer.");
+      alert(
+        "❌ Error deleting customer: " +
+          (error.response?.data?.message || error.message)
+      );
     } finally {
       setLoading(false);
     }
@@ -275,21 +385,39 @@ function Settings() {
 
   const handleSaveDairy = async () => {
     try {
-      setLoading(true);
-      const response = await dairyInfoAPI.saveDairyInfo({
-        dairyName,
-        dairyLogo: null,
-        paymentQRImage: null,
-      });
-
-      if (response.success) {
-        alert("Dairy information saved successfully!");
-      } else {
-        alert("Failed to save dairy information.");
+      if (!dairyName || dairyName.trim() === "") {
+        alert("Dairy name is required");
+        return;
       }
-    } catch (error) {
-      console.error("Error saving dairy info:", error);
-      alert("Error saving dairy information.");
+
+      const formData = new FormData();
+      formData.append("DairyName", dairyName.trim());
+
+      if (dairyLogoFile) {
+        formData.append("DairyLogo", dairyLogoFile);
+      }
+
+      if (qrFile) {
+        formData.append("PaymentQRImage", qrFile);
+      }
+      console.log(dairyLogoFile);
+      console.log(qrFile);
+      setLoading(true);
+
+      const response = await dairyInfoAPI.saveDairyInfo(formData);
+
+      // ✅ response is already response.data
+      if (response.success) {
+        alert("✅ Saved successfully");
+      } else {
+        alert(response.message || "Save failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert(
+        err.response?.data?.message ||
+          "❌ Upload failed (validation or server error)"
+      );
     } finally {
       setLoading(false);
     }
@@ -408,6 +536,13 @@ function Settings() {
 
           {customerMode === "add" && (
             <div className="space-y-4">
+              {/* Validation Error Message */}
+              {errorMessage && (
+                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
+                  {errorMessage}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
                   <label className="w-full md:w-40 text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -418,8 +553,15 @@ function Settings() {
                     placeholder={text.customerName}
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className={`flex-1 rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition ${
+                      nameError
+                        ? "border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-200"
+                        : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary"
+                    }`}
                   />
+                  {nameError && (
+                    <p className="text-red-600 text-xs mt-1">{nameError}</p>
+                  )}
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
@@ -428,11 +570,18 @@ function Settings() {
                   </label>
                   <input
                     type="tel"
-                    placeholder={text.whatsappNo}
+                    placeholder="e.g., 9876543210"
                     value={whatsAppNo}
                     onChange={(e) => setWhatsAppNo(e.target.value)}
-                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className={`flex-1 rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition ${
+                      whatsappError
+                        ? "border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-200"
+                        : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary"
+                    }`}
                   />
+                  {whatsappError && (
+                    <p className="text-red-600 text-xs mt-1">{whatsappError}</p>
+                  )}
                 </div>
               </div>
 
@@ -477,7 +626,9 @@ function Settings() {
                         type="number"
                         step="0.01"
                         value={cowRate}
-                        onChange={(e) => setCowRate(parseFloat(e.target.value))}
+                        onChange={(e) =>
+                          setCowRate(parseFloat(e.target.value) || 0)
+                        }
                         className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       />
                     </div>
@@ -492,7 +643,7 @@ function Settings() {
                       step="0.1"
                       value={cowDefaultLiters}
                       onChange={(e) =>
-                        setCowDefaultLiters(parseFloat(e.target.value))
+                        setCowDefaultLiters(parseFloat(e.target.value) || 0)
                       }
                       className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
@@ -512,7 +663,7 @@ function Settings() {
                         step="0.01"
                         value={buffaloRate}
                         onChange={(e) =>
-                          setBuffaloRate(parseFloat(e.target.value))
+                          setBuffaloRate(parseFloat(e.target.value) || 0)
                         }
                         className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                       />
@@ -528,7 +679,7 @@ function Settings() {
                       step="0.1"
                       value={buffaloDefaultLiters}
                       onChange={(e) =>
-                        setBuffaloDefaultLiters(parseFloat(e.target.value))
+                        setBuffaloDefaultLiters(parseFloat(e.target.value) || 0)
                       }
                       className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
@@ -539,8 +690,8 @@ function Settings() {
               <div className="flex gap-3">
                 <button
                   type="button"
-                  disabled={loading}
-                  className="flex-1 bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition disabled:opacity-50"
+                  disabled={loading || !!nameError || !!whatsappError}
+                  className="flex-1 bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleSaveCustomer}
                 >
                   {loading
@@ -555,6 +706,9 @@ function Settings() {
                   onClick={() => {
                     setCustomerMode("buttons");
                     resetCustomerForm();
+                    setErrorMessage("");
+                    setNameError("");
+                    setWhatsappError("");
                   }}
                 >
                   {text.cancel}
@@ -822,6 +976,7 @@ function Settings() {
                   type="file"
                   accept="image/*"
                   className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  onChange={(e) => setDairyLogoFile(e.target.files[0])}
                 />
               </div>
 
@@ -832,6 +987,7 @@ function Settings() {
                 <input
                   type="file"
                   accept="image/*"
+                  onChange={(e) => setQrFile(e.target.files[0])}
                   className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
@@ -870,56 +1026,158 @@ function Settings() {
 
           {purchaseOpen && (
             <div className="space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center gap-2">
-                <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {text.purchaseMilkType}
-                </label>
-                <select
-                  value={purchaseMilkType}
-                  onChange={(e) =>
-                    setPurchaseMilkType(parseInt(e.target.value))
-                  }
-                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value={0}>{text.milkTypeCow}</option>
-                  <option value={1}>{text.milkTypeBuffalo}</option>
-                </select>
+              {/* Form */}
+              <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {text.purchaseMilkType || "Milk Type"}
+                  </label>
+                  <select
+                    value={purchaseMilkType}
+                    onChange={(e) =>
+                      setPurchaseMilkType(parseInt(e.target.value))
+                    }
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value={0}>{text.milkTypeCow || "Cow"}</option>
+                    <option value={1}>
+                      {text.milkTypeBuffalo || "Buffalo"}
+                    </option>
+                  </select>
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {text.purchaseLiterQty || "Quantity (Liters)"}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={purchaseQty}
+                    onChange={(e) => setPurchaseQty(e.target.value)}
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {text.purchaseRate || "Rate (₹/Liter)"}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={purchaseRate}
+                    onChange={(e) => setPurchaseRate(e.target.value)}
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Entry Date
+                  </label>
+                  <input
+                    type="date"
+                    value={purchaseEntryDate}
+                    onChange={(e) => setPurchaseEntryDate(e.target.value)}
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={loading}
+                    className="flex-1 bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-3 rounded-lg text-sm transition disabled:opacity-50"
+                    onClick={handleSavePurchase}
+                  >
+                    {loading
+                      ? "Saving..."
+                      : purchaseEntryId === 0
+                      ? text.savePurchaseEntry || "Save Entry"
+                      : "Update Entry"}
+                  </button>
+                  {purchaseEntryId > 0 && (
+                    <button
+                      type="button"
+                      className="px-4 py-2.5 bg-slate-500 hover:bg-slate-600 text-white rounded-lg text-sm font-semibold transition"
+                      onClick={resetPurchaseForm}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
 
-              <div className="flex flex-col md:flex-row md:items-center gap-2">
-                <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {text.purchaseLiterQty}
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={purchaseQty}
-                  onChange={(e) => setPurchaseQty(e.target.value)}
-                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <div className="flex flex-col md:flex-row md:items-center gap-2">
-                <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {text.purchaseRate}
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={purchaseRate}
-                  onChange={(e) => setPurchaseRate(e.target.value)}
-                  className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-
-              <button
-                type="button"
-                disabled={loading}
-                className="w-full bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-3 rounded-lg text-sm transition disabled:opacity-50"
-                onClick={handleSavePurchase}
-              >
-                {loading ? "Saving..." : text.savePurchaseEntry}
-              </button>
+              {/* Last 5 Days Entries Table */}
+              {purchaseEntries.length > 0 && (
+                <div className="overflow-x-auto">
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    Last 5 Days Purchase Entries
+                  </h3>
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-100 dark:bg-slate-700">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-slate-700 dark:text-slate-300">
+                          Date
+                        </th>
+                        <th className="px-3 py-2 text-left text-slate-700 dark:text-slate-300">
+                          Type
+                        </th>
+                        <th className="px-3 py-2 text-right text-slate-700 dark:text-slate-300">
+                          Qty (L)
+                        </th>
+                        <th className="px-3 py-2 text-right text-slate-700 dark:text-slate-300">
+                          Rate (₹)
+                        </th>
+                        <th className="px-3 py-2 text-right text-slate-700 dark:text-slate-300">
+                          Total (₹)
+                        </th>
+                        <th className="px-3 py-2 text-center text-slate-700 dark:text-slate-300">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {purchaseEntries.map((entry) => (
+                        <tr
+                          key={entry.purchaseEntryId}
+                          className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+                        >
+                          <td className="px-3 py-2 text-slate-900 dark:text-white">
+                            {new Date(entry.entryDate).toLocaleDateString(
+                              "en-IN"
+                            )}
+                          </td>
+                          <td className="px-3 py-2 text-slate-900 dark:text-white">
+                            {entry.milkType === 0 ? "Cow" : "Buffalo"}
+                          </td>
+                          <td className="px-3 py-2 text-right text-slate-900 dark:text-white">
+                            {entry.purchaseQtyLiters.toFixed(2)}
+                          </td>
+                          <td className="px-3 py-2 text-right text-slate-900 dark:text-white">
+                            {entry.purchaseRate.toFixed(2)}
+                          </td>
+                          <td className="px-3 py-2 text-right text-slate-900 dark:text-white font-semibold">
+                            {(
+                              entry.purchaseQtyLiters * entry.purchaseRate
+                            ).toFixed(2)}
+                          </td>
+                          <td className="px-3 py-2 text-center">
+                            <button
+                              type="button"
+                              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                              onClick={() => handleEditPurchaseEntry(entry)}
+                            >
+                              <i className="fas fa-edit" /> Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </section>

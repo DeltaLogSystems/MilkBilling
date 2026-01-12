@@ -102,24 +102,30 @@ function HomePage() {
       const dateStr = toInputDateValue(effectiveDate);
       const response = await dailyMilkAPI.getDailyEntries(dateStr);
 
-      if (response.success && response.data && response.data.length > 0) {
-        const newQty = { ...quantities };
-        response.data.forEach((entry) => {
-          newQty[entry.customerId] = entry.quantity;
-        });
-        setQuantities(newQty);
+      if (response.success && response.data) {
+        const { entries, isHoliday: holidayFlag } = response.data;
 
-        // Check if all quantities are 0 (holiday mode)
-        const allZero = Object.values(newQty).every((qty) => qty === 0);
-        setIsHoliday(allZero);
-      } else {
-        // Reset to defaults if no entries found
-        const defaultQty = {};
-        customers.forEach((c) => {
-          defaultQty[c.id] = c.defaultQty;
-        });
-        setQuantities(defaultQty);
-        setIsHoliday(false);
+        if (entries && entries.length > 0) {
+          const newQty = {};
+          customers.forEach((c) => {
+            newQty[c.id] = c.defaultQty;
+          });
+
+          entries.forEach((entry) => {
+            newQty[entry.customerId] = entry.quantity;
+          });
+
+          setQuantities(newQty);
+          setIsHoliday(holidayFlag || false);
+        } else {
+          // Reset to defaults if no entries found
+          const defaultQty = {};
+          customers.forEach((c) => {
+            defaultQty[c.id] = c.defaultQty;
+          });
+          setQuantities(defaultQty);
+          setIsHoliday(false);
+        }
       }
     } catch (error) {
       console.error("Error loading daily entries:", error);
@@ -211,16 +217,19 @@ function HomePage() {
     try {
       setLoading(true);
 
-      const entries = customers
-        .map((c) => ({
-          customerId: c.id,
-          milkType: c.milkType === "cow" ? 0 : 1,
-          quantity: quantities[c.id] || 0,
-        }))
-        .filter((e) => e.quantity > 0);
+      // Include all customers, even with 0 quantity
+      const entries = customers.map((c) => ({
+        customerId: c.id,
+        milkType: c.milkType === "cow" ? 0 : 1,
+        quantity: quantities[c.id] || 0,
+      }));
 
       const dateStr = toInputDateValue(effectiveDate);
-      const response = await dailyMilkAPI.saveDailyEntries(dateStr, entries);
+      const response = await dailyMilkAPI.saveDailyEntries(
+        dateStr,
+        entries,
+        isHoliday
+      );
 
       if (response.success) {
         alert("Daily entries saved successfully!");
@@ -335,71 +344,33 @@ function HomePage() {
               </div>
             </div>
           )}
-
-          {/* Holiday Mode Toggle - Compact Version */}
-          <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-800 dark:to-slate-700 rounded-lg shadow-sm p-2 md:p-2.5 border border-orange-200 dark:border-orange-900/30 transition-all duration-300">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full transition-all duration-300 ${
-                    isHoliday
-                      ? "bg-orange-500 shadow-md shadow-orange-500/40"
-                      : "bg-slate-300 dark:bg-slate-600"
-                  }`}
-                >
-                  <i
-                    className={`fas ${
-                      isHoliday ? "fa-umbrella-beach" : "fa-calendar-check"
-                    } text-white text-sm`}
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs md:text-sm font-bold text-slate-800 dark:text-white leading-tight">
-                    Holiday Mode
-                  </span>
-                  <span className="text-[10px] md:text-xs text-slate-600 dark:text-slate-400 leading-tight">
-                    {isHoliday ? "All set to 0" : "Set all quantities to 0"}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                onClick={handleHolidayToggle}
-                className={`relative inline-flex h-7 w-12 md:h-8 md:w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 ${
-                  isHoliday
-                    ? "bg-orange-500 shadow-md shadow-orange-500/30"
-                    : "bg-slate-300 dark:bg-slate-600"
-                }`}
-                role="switch"
-                aria-checked={isHoliday}
-                aria-label="Toggle holiday mode"
-              >
-                <span
-                  className={`inline-block h-5 w-5 md:h-6 md:w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
-                    isHoliday
-                      ? "translate-x-6 md:translate-x-7"
-                      : "translate-x-1"
-                  }`}
-                >
-                  <span className="flex items-center justify-center h-full">
-                    {isHoliday ? (
-                      <i className="fas fa-check text-orange-500 text-[10px]" />
-                    ) : (
-                      <i className="fas fa-times text-slate-400 text-[10px]" />
-                    )}
-                  </span>
-                </span>
-              </button>
-            </div>
-          </div>
         </div>
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 pt-0 pb-24 md:p-6 md:pt-0 md:pb-6">
         <section>
-          <h2 className="mb-2 text-base md:text-md font-bold text-slate-800 dark:text-white">
-            {text.dailyEntriesFor} {headingDateText}
-          </h2>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h2 className="text-base md:text-md font-bold text-slate-800 dark:text-white">
+              {text.dailyEntriesFor} {headingDateText}
+            </h2>
+
+            {/* Holiday Toggle Button - Icon Only */}
+            <button
+              onClick={handleHolidayToggle}
+              className={`flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full transition-all duration-300 shadow-md hover:shadow-lg ${
+                isHoliday
+                  ? "bg-orange-500 hover:bg-orange-600"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
+              title={isHoliday ? "Exit Holiday Mode" : "Enter Holiday Mode"}
+            >
+              <i
+                className={`fas ${
+                  isHoliday ? "fa-umbrella-beach" : "fa-calendar-check"
+                } text-white text-lg`}
+              />
+            </button>
+          </div>
 
           {loading ? (
             <div className="text-center py-8">Loading...</div>
