@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import settingsLanguage from "../../language/settingsLanguage";
 import {
+  authAPI,
   customerAPI,
   dairyInfoAPI,
   milkRateAPI,
@@ -10,6 +12,7 @@ import {
 
 function Settings() {
   const { language, setLanguage } = useLanguage();
+  const navigate = useNavigate();
   const text = settingsLanguage[language];
 
   const [customerMode, setCustomerMode] = useState("buttons");
@@ -457,6 +460,21 @@ function Settings() {
 
   const handleCustomerSearchChange = (e) => {
     setCustomerSearch(e.target.value);
+  };
+
+  const handleLogout = async () => {
+    if (window.confirm(text.logoutConfirmMessage)) {
+      try {
+        setLoading(true);
+        await authAPI.logout();
+        navigate("/login");
+      } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Logout failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -1180,6 +1198,25 @@ function Settings() {
               )}
             </div>
           )}
+        </section>
+
+        {/* Logout Section */}
+        <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-5 shadow-sm mt-2">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-base md:text-lg font-bold flex items-center gap-2 md:gap-3 text-slate-900 dark:text-white">
+              <i className="fas fa-user-circle text-primary" />
+              <span>{text.logoutSectionTitle}</span>
+            </h2>
+          </div>
+          <button
+            type="button"
+            disabled={loading}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleLogout}
+          >
+            <i className="fas fa-sign-out-alt" />
+            <span>{text.logoutButton}</span>
+          </button>
         </section>
       </main>
     </>

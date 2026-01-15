@@ -48,6 +48,11 @@ const settingsLanguage = {
     purchaseLiterQty: 'Purchase Liter Qty',
     purchaseRate: 'Purchase Rate (₹/Ltr)',
     savePurchaseEntry: 'Save Purchase Entry',
+
+    // Logout
+    logoutSectionTitle: 'Account',
+    logoutButton: 'Logout',
+    logoutConfirmMessage: 'Are you sure you want to logout?',
   },
   mr: {
     pageTitle: 'सेटिंग्स',
@@ -97,6 +102,11 @@ const settingsLanguage = {
     purchaseLiterQty: 'खरेदी लिटर प्रमाण',
     purchaseRate: 'खरेदी दर (₹/लिटर)',
     savePurchaseEntry: 'खरेदी नोंद जतन करा',
+
+    // Logout
+    logoutSectionTitle: 'खाते',
+    logoutButton: 'लॉगआउट',
+    logoutConfirmMessage: 'तुम्हाला खात्री आहे की तुम्ही लॉगआउट करू इच्छिता?',
   },
 };
 
