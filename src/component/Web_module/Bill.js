@@ -4,6 +4,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import billLanguage from "../../language/billLanguage";
 import reportLanguage from "../../language/reportLanguage";
 import { billingAPI, reportAPI } from "../../services/api";
+import Spinner from "../common/Spinner";
 
 function Bill() {
   const { language } = useLanguage();
@@ -206,14 +207,13 @@ function Bill() {
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
         <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2">
             <img
               src="/images/logo.png"
               alt={text.pageTitle}
-              width="40"
-              height="32"
+              className="w-10 h-8 md:w-16 md:h-12"
             />
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+            <h1 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white">
               {text.pageTitle}
             </h1>
           </div>
@@ -275,7 +275,7 @@ function Bill() {
 
       <main className="flex-1 overflow-y-auto p-4 pt-0 pb-24 md:p-6 md:pt-0 md:pb-6">
         {loading ? (
-          <div className="text-center py-8">Loading...</div>
+          <Spinner />
         ) : (
           <section>
             <div className="grid gap-3 md:grid-cols-1 lg:grid-cols-2">

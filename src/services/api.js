@@ -292,6 +292,12 @@ export const dashboardAPI = {
     });
     return response.data;
   },
+
+  getMonthlySoldMilk: async () => {
+    const userId = getUserId();
+    const response = await api.get(`/Dashboard/monthly-sold-milk?userId=${userId}`);
+    return response.data;
+  },
 };
 
 // Report API
