@@ -207,13 +207,13 @@ function Bill() {
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
         <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 md:hidden">
             <img
               src="/images/logo.png"
               alt={text.pageTitle}
-              className="w-10 h-8 md:w-16 md:h-12"
+              className="w-10 h-8"
             />
-            <h1 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
               {text.pageTitle}
             </h1>
           </div>
