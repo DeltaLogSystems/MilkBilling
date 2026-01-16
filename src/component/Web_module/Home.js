@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
 import homeLanguage from "../../language/homeLanguage";
 import { customerAPI, dailyMilkAPI } from "../../services/api";
+import Spinner from "../common/Spinner";
 
 // Helper: format Date -> "24 July, 2024"
 function formatDisplayDate(date) {
@@ -373,7 +374,7 @@ function HomePage() {
           </div>
 
           {loading ? (
-            <div className="text-center py-8">Loading...</div>
+            <Spinner />
           ) : (
             <div className="grid gap-3 md:grid-cols-1 lg:grid-cols-2">
               {filteredCustomers.map((c) => (
