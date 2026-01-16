@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
 import dashboardLanguage from "../../language/dashboardLanguage";
 import { dashboardAPI } from "../../services/api";
+import Spinner from "../common/Spinner";
 
 function Dashboard() {
   const { language } = useLanguage();
@@ -11,6 +12,7 @@ function Dashboard() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const [monthlyDataLoading, setMonthlyDataLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState({
     purchasedMilk: {
       cowLiters: 0,
@@ -26,10 +28,15 @@ function Dashboard() {
     },
     profit: 0,
   });
+  const [monthlySoldMilk, setMonthlySoldMilk] = useState([]);
 
   useEffect(() => {
     loadDashboardData();
   }, [activeTab, fromDate, toDate]);
+
+  useEffect(() => {
+    loadMonthlySoldMilk();
+  }, []);
 
   const loadDashboardData = async () => {
     try {
@@ -81,6 +88,20 @@ function Dashboard() {
     }
   };
 
+  const loadMonthlySoldMilk = async () => {
+    try {
+      setMonthlyDataLoading(true);
+      const response = await dashboardAPI.getMonthlySoldMilk();
+      if (response && response.success) {
+        setMonthlySoldMilk(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading monthly sold milk:", error);
+    } finally {
+      setMonthlyDataLoading(false);
+    }
+  };
+
   const handleTabClick = (tabKey) => {
     setActiveTab(tabKey);
   };
@@ -97,14 +118,13 @@ function Dashboard() {
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
         <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-2">
             <img
               src="/images/logo.png"
               alt={text.pageTitle}
-              width="40"
-              height="32"
+              className="w-10 h-8 md:w-16 md:h-12"
             />
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+            <h1 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white">
               {text.pageTitle}
             </h1>
           </div>
@@ -180,7 +200,7 @@ function Dashboard() {
 
       <main className="flex-1 overflow-y-auto p-4 pt-0 pb-24 md:p-6 md:pt-0 md:pb-6">
         {loading ? (
-          <div className="text-center py-8">Loading...</div>
+          <Spinner />
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -260,28 +280,43 @@ function Dashboard() {
               <h3 className="text-lg font-bold text-primary mb-6">
                 {text.soldMilkMonthWise}
               </h3>
-              <div className="flex items-end justify-between h-52 md:h-64 -mx-2">
-                {["jan", "feb", "mar", "apr", "may", "jun"].map(
-                  (month, idx) => (
-                    <div
-                      key={month}
-                      className="flex flex-col items-center flex-1"
-                    >
-                      <div
-                        className="w-4 md:w-6 bg-primary/30 rounded-t"
-                        style={{ height: `${20 + idx * 5}%` }}
-                      />
-                      <div
-                        className="w-4 md:w-6 bg-primary rounded-t"
-                        style={{ height: `${30 + idx * 3}%` }}
-                      />
-                      <span className="mt-2 text-xs text-slate-500">
-                        {text.months[month]}
-                      </span>
-                    </div>
-                  )
-                )}
-              </div>
+              {monthlyDataLoading ? (
+                <Spinner />
+              ) : monthlySoldMilk.length > 0 ? (
+                <div className="space-y-4">
+                  {monthlySoldMilk.map((monthData, idx) => {
+                    const maxValue = Math.max(...monthlySoldMilk.map(m => m.totalLiters || 0));
+                    const percentage = maxValue > 0 ? (monthData.totalLiters / maxValue) * 100 : 0;
+
+                    return (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-medium text-slate-700 dark:text-slate-300 w-20">
+                            {text.months[monthData.monthName?.toLowerCase()] || monthData.monthName}
+                          </span>
+                          <span className="text-slate-600 dark:text-slate-400">
+                            {monthData.totalLiters?.toFixed(1) || 0} L
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-8">
+                          <div
+                            className="bg-gradient-to-r from-primary to-primary/70 h-8 rounded-full flex items-center justify-end px-3 transition-all duration-500"
+                            style={{ width: `${percentage}%` }}
+                          >
+                            <span className="text-white text-xs font-semibold">
+                              {percentage > 20 ? `₹${monthData.totalAmount?.toLocaleString('en-IN') || 0}` : ''}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                  No monthly data available
+                </div>
+              )}
             </div>
           </>
         )}
