@@ -7,6 +7,12 @@ const reportLanguage = {
     tabReport: 'Report',
     tabBill: 'Bill',
 
+    // Month names
+    months: [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ],
+
     // Filters
     searchCustomerPlaceholder: 'Search Customer...',
     month: 'Month',
@@ -27,6 +33,12 @@ const reportLanguage = {
     // NEW: top tabs text
     tabReport: 'रिपोर्ट',
     tabBill: 'बिल',
+
+    // Month names
+    months: [
+      'जानेवारी', 'फेब्रुवारी', 'मार्च', 'एप्रिल', 'मे', 'जून',
+      'जुलै', 'ऑगस्ट', 'सप्टेंबर', 'ऑक्टोबर', 'नोव्हेंबर', 'डिसेंबर'
+    ],
 
     searchCustomerPlaceholder: 'ग्राहक शोधा...',
     month: 'महिना',
