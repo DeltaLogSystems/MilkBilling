@@ -15,6 +15,15 @@ function Report() {
   const isReportTabActive = location.pathname === "/report";
   const isBillTabActive = location.pathname === "/bill";
 
+  // Get previous month name
+  const getPreviousMonthName = () => {
+    const currentDate = new Date();
+    const previousMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+    return text.months[previousMonth];
+  };
+
+  const previousMonthName = getPreviousMonthName();
+
   const [activeTab, setActiveTab] = useState("month");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -185,7 +194,7 @@ function Report() {
                 : "bg-primary/20 text-primary dark:bg-primary/30"
             }`}
           >
-            {text.tabReport}
+            {text.tabReport} ({previousMonthName})
           </Link>
           <Link
             to="/bill"
@@ -195,7 +204,7 @@ function Report() {
                 : "bg-primary/20 text-primary dark:bg-primary/30"
             }`}
           >
-            {text.tabBill}
+            {text.tabBill} ({previousMonthName})
           </Link>
         </div>
 

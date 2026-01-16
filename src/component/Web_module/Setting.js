@@ -467,11 +467,11 @@ function Settings() {
       try {
         setLoading(true);
         await authAPI.logout();
-        navigate("/login");
+        // Use window.location for full page redirect to ensure clean state
+        window.location.href = "/login";
       } catch (error) {
         console.error("Logout failed:", error);
         alert("Logout failed. Please try again.");
-      } finally {
         setLoading(false);
       }
     }
