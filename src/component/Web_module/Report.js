@@ -210,7 +210,10 @@ function Report() {
           />
         </div>
 
-        <div className="flex gap-3 mb-1 overflow-x-auto">
+        <div
+          className="flex gap-3 mb-1 overflow-x-auto"
+          style={{ display: "none" }}
+        >
           <button
             type="button"
             className={`flex h-10 flex-1 items-center justify-center rounded-lg text-sm ${
