@@ -18,7 +18,8 @@ function Report() {
   // Get previous month name
   const getPreviousMonthName = () => {
     const currentDate = new Date();
-    const previousMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+    const previousMonth =
+      currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
     return text.months[previousMonth];
   };
 
