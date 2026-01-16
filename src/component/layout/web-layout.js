@@ -24,8 +24,8 @@ export default function WebLayout() {
           <img
             src="/images/logo.png"
             alt={text.appTitle}
-            width="80"
-            height="70"
+            width="120"
+            height="105"
             className="mx-auto"
           />
         </div>
