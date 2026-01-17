@@ -58,19 +58,27 @@ function PurchaseMilkEntry({ text }) {
       setLoading(true);
 
       const purchaseData = {
+        purchaseEntryId: purchaseEntryId,
         milkType: purchaseMilkType,
         purchaseQtyLiters: parseFloat(purchaseQty),
         purchaseRate: parseFloat(purchaseRate),
         entryDate: purchaseEntryDate,
       };
 
-      const response = await purchaseMilkAPI.savePurchaseEntry(purchaseData);
+      let response;
+      if (purchaseEntryId === 0) {
+        response = await purchaseMilkAPI.savePurchaseEntry(purchaseData);
+      } else {
+        response = await purchaseMilkAPI.updatePurchaseEntry(purchaseData);
+      }
 
       if (response.success) {
         await showAlert({
           type: "success",
           title: "Success",
-          message: "Purchase entry saved successfully!",
+          message: purchaseEntryId === 0
+            ? "Purchase entry saved successfully!"
+            : "Purchase entry updated successfully!",
         });
         resetPurchaseForm();
         await loadPurchaseEntries();
@@ -117,13 +125,22 @@ function PurchaseMilkEntry({ text }) {
 
     try {
       setLoading(true);
-      // Note: You may need to implement a delete API endpoint
-      await showAlert({
-        type: "info",
-        title: "Info",
-        message: "Delete functionality needs to be implemented in the API",
-      });
-      await loadPurchaseEntries();
+      const response = await purchaseMilkAPI.deletePurchaseEntry(entry.purchaseEntryId);
+
+      if (response.success) {
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: "Purchase entry deleted successfully!",
+        });
+        await loadPurchaseEntries();
+      } else {
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: response.message || "Failed to delete purchase entry.",
+        });
+      }
     } catch (error) {
       console.error("Error deleting purchase entry:", error);
       await showAlert({
@@ -250,6 +267,9 @@ function PurchaseMilkEntry({ text }) {
               <table className="w-full text-sm border border-slate-200 dark:border-slate-600 rounded-lg">
                 <thead className="bg-slate-100 dark:bg-slate-700">
                   <tr>
+                    <th className="px-3 py-2 text-center text-slate-700 dark:text-slate-300">
+                      Actions
+                    </th>
                     <th className="px-3 py-2 text-left text-slate-700 dark:text-slate-300">
                       Date
                     </th>
@@ -265,9 +285,6 @@ function PurchaseMilkEntry({ text }) {
                     <th className="px-3 py-2 text-right text-slate-700 dark:text-slate-300">
                       Total (₹)
                     </th>
-                    <th className="px-3 py-2 text-center text-slate-700 dark:text-slate-300">
-                      Actions
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -276,6 +293,24 @@ function PurchaseMilkEntry({ text }) {
                       key={entry.purchaseEntryId}
                       className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                     >
+                      <td className="px-3 py-2 text-center">
+                        <button
+                          type="button"
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
+                          onClick={() => handleEditPurchaseEntry(entry)}
+                          title="Edit"
+                        >
+                          <i className="fas fa-edit" />
+                        </button>
+                        <button
+                          type="button"
+                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                          onClick={() => handleDeletePurchaseEntry(entry)}
+                          title="Delete"
+                        >
+                          <i className="fas fa-trash" />
+                        </button>
+                      </td>
                       <td className="px-3 py-2 text-slate-900 dark:text-white">
                         {new Date(entry.entryDate).toLocaleDateString(
                           "en-IN"
@@ -294,24 +329,6 @@ function PurchaseMilkEntry({ text }) {
                         {(
                           entry.purchaseQtyLiters * entry.purchaseRate
                         ).toFixed(2)}
-                      </td>
-                      <td className="px-3 py-2 text-center">
-                        <button
-                          type="button"
-                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
-                          onClick={() => handleEditPurchaseEntry(entry)}
-                          title="Edit"
-                        >
-                          <i className="fas fa-edit" />
-                        </button>
-                        <button
-                          type="button"
-                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                          onClick={() => handleDeletePurchaseEntry(entry)}
-                          title="Delete"
-                        >
-                          <i className="fas fa-trash" />
-                        </button>
                       </td>
                     </tr>
                   ))}

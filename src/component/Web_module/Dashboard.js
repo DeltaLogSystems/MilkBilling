@@ -318,10 +318,24 @@ function Dashboard() {
                                 : ""}
                             </span>
                           </div>
+
+                          {/* Vertical Bar */}
+                          <div className="relative w-full h-full flex items-end">
+                            <div
+                              className="w-full bg-gradient-to-t from-primary to-primary/70 rounded-t-lg transition-all duration-500 hover:from-primary/90 hover:to-primary/60 cursor-pointer shadow-lg"
+                              style={{ height: `${heightPercentage}%` }}
+                              title={`${text.months[monthData.monthName?.toLowerCase()] || monthData.monthName}: ${monthData.totalLiters?.toFixed(1)}L - ₹${monthData.totalAmount?.toLocaleString('en-IN')}`}
+                            />
+                          </div>
+
+                          {/* Month Label at Bottom */}
+                          <span className="text-xs md:text-sm font-medium text-slate-700 dark:text-slate-300 text-center mt-2 rotate-0 md:rotate-0 whitespace-nowrap">
+                            {text.months[monthData.monthName?.toLowerCase()] || monthData.monthName}
+                          </span>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8 text-slate-500 dark:text-slate-400">
