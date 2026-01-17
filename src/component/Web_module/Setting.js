@@ -1,11 +1,11 @@
 import { useLanguage } from "../../context/LanguageContext";
 import settingsLanguage from "../../language/settingsLanguage";
-import LanguageSection from "./SettingsSections/LanguageSection";
 import CustomerManagement from "./SettingsSections/CustomerManagement";
-import MilkRateMaster from "./SettingsSections/MilkRateMaster";
 import DairyInformation from "./SettingsSections/DairyInformation";
-import PurchaseMilkEntry from "./SettingsSections/PurchaseMilkEntry";
+import LanguageSection from "./SettingsSections/LanguageSection";
 import LogoutSection from "./SettingsSections/LogoutSection";
+import MilkRateMaster from "./SettingsSections/MilkRateMaster";
+import PurchaseMilkEntry from "./SettingsSections/PurchaseMilkEntry";
 
 function Settings() {
   const { language } = useLanguage();
@@ -14,14 +14,13 @@ function Settings() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
-        <div className="flex items-center justify-between md:justify-start">
-          <div className="flex items-center gap-2 md:hidden">
-            <img
-              src="/images/logo.png"
-              alt={text.pageTitle}
-              className="w-10 h-8"
-            />
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+        <div className="flex items-center justify-between md:justify-start md:hidden">
+          <div className="flex items-center w-full  relative">
+            {/* Logo on left */}
+            <img src="/images/logo.png" alt={text.pageTitle} className="logo" />
+
+            {/* Centered text */}
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-slate-900 dark:text-white">
               {text.pageTitle}
             </h1>
           </div>

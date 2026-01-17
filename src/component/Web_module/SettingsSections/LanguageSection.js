@@ -7,11 +7,13 @@ function LanguageSection({ text }) {
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
     // Save to cookie (expires in 365 days)
-    document.cookie = `appLanguage=${newLanguage}; max-age=${365 * 24 * 60 * 60}; path=/`;
+    document.cookie = `appLanguage=${newLanguage}; max-age=${
+      365 * 24 * 60 * 60
+    }; path=/`;
   };
 
   return (
-    <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-5 shadow-sm mt-2">
+    <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-5 shadow-sm mt-0">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-base md:text-lg font-bold flex items-center gap-2 md:gap-3 text-slate-900 dark:text-white">
           <i className="fas fa-language text-primary" />

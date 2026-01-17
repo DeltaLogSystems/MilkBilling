@@ -117,13 +117,16 @@ function Dashboard() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
-        <div className="flex items-center ">
-          <div className="flex items-center gap-2 md:hidden">
-            <img className="logo" src="/images/logo.png" alt={text.appTitle} />
+        <div className="flex items-center justify-between md:justify-start md:hidden">
+          <div className="flex items-center w-full  relative">
+            {/* Logo on left */}
+            <img src="/images/logo.png" alt={text.pageTitle} className="logo" />
+
+            {/* Centered text */}
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-slate-900 dark:text-white">
+              {text.pageTitle}
+            </h1>
           </div>
-          <h1 className="text-lg font-bold text-center text-slate-900 dark:text-white">
-            {text.pageTitle}
-          </h1>
         </div>
 
         <div className="flex gap-3 mb-3 overflow-x-auto">
