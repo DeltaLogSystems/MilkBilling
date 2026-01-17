@@ -1,7 +1,7 @@
 // src/component/layout/web-layout.jsx
-import { Link, useLocation } from 'react-router-dom';
-import { useLanguage } from '../../context/LanguageContext';
-import layoutLanguage from '../../language/layoutLanguage';
+import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
+import layoutLanguage from "../../language/layoutLanguage";
 
 export default function WebLayout() {
   const location = useLocation();
@@ -11,10 +11,11 @@ export default function WebLayout() {
   const text = layoutLanguage[language];
 
   const isActive = (path) => currentPath === path;
-  const isReportModuleActive = currentPath === '/report' || currentPath === '/bill';
+  const isReportModuleActive =
+    currentPath === "/report" || currentPath === "/bill";
 
-  const activeClass = 'sidebar-icon-item active';
-  const inactiveClass = 'sidebar-icon-item';
+  const activeClass = "sidebar-icon-item active";
+  const inactiveClass = "sidebar-icon-item";
 
   return (
     <>
@@ -34,15 +35,15 @@ export default function WebLayout() {
           {text.appTitle}
         </h1>
 
-        <div className="stats-container mb-8">
+        <div className="stats-container mb-8" style={{ display: "none" }}>
           <div className="stats-title">{text.totalCustomersTitle}</div>
           <div className="stats-value">5</div>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-2 mt-2">
           <Link
             to="/"
-            className={`${isActive('/') ? activeClass : inactiveClass}`}
+            className={`${isActive("/") ? activeClass : inactiveClass}`}
           >
             <i className="fas fa-home" />
             <span>{text.navHome}</span>
@@ -50,7 +51,7 @@ export default function WebLayout() {
 
           <Link
             to="/dashboard"
-            className={isActive('/dashboard') ? activeClass : inactiveClass}
+            className={isActive("/dashboard") ? activeClass : inactiveClass}
           >
             <i className="fas fa-chart-line" />
             <span>{text.navDashboard}</span>
@@ -66,7 +67,7 @@ export default function WebLayout() {
 
           <Link
             to="/settings"
-            className={isActive('/settings') ? activeClass : inactiveClass}
+            className={isActive("/settings") ? activeClass : inactiveClass}
           >
             <i className="fas fa-cog" />
             <span>{text.navSettings}</span>

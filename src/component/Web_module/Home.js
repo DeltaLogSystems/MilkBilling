@@ -253,6 +253,7 @@ function HomePage() {
         <div className="flex items-center justify-between ">
           <div className="flex items-center gap-2 md:hidden">
             <img
+              className="logo"
               src="/images/logo.png"
               alt={text.appTitle}
               width="40"

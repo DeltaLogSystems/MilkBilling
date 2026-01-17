@@ -265,9 +265,23 @@ input[type="date"]:focus {
   color: var(--primary); /* text-primary */
 }
 
-img {
+/* img {
   height: 25px;
-  width: 25px;
+  width: 130px;
+} */
+
+@media (max-width: 768px) {
+  .logo {
+    height: 25px;
+    width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    height: 40px;
+    width: 40px;
+  }
 }
 
 /* Mobile layout height set using CSS variable --vh to handle mobile browser chrome */
