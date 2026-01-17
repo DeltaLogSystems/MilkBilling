@@ -6,10 +6,18 @@ const LanguageContext = createContext({
   setLanguage: () => {},
 });
 
+// Helper function to get cookie value
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
 export function LanguageProvider({ children }) {
-  // Load saved language from localStorage or default to 'en'
+  // Load saved language from cookie or default to 'en'
   const [language, setLanguage] = useState(() => {
-    const saved = localStorage.getItem('appLanguage');
+    const saved = getCookie('appLanguage');
     return saved || 'en';
   });
 

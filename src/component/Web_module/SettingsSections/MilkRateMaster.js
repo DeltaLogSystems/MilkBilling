@@ -8,10 +8,8 @@ function MilkRateMaster({ text }) {
   const [masterBuffaloRate, setMasterBuffaloRate] = useState(0);
 
   useEffect(() => {
-    if (rateOpen) {
-      loadMilkRates();
-    }
-  }, [rateOpen]);
+    loadMilkRates();
+  }, []);
 
   const loadMilkRates = async () => {
     try {

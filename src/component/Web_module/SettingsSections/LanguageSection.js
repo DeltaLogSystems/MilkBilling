@@ -6,8 +6,8 @@ function LanguageSection({ text }) {
   const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
-    // Save to localStorage
-    localStorage.setItem("appLanguage", newLanguage);
+    // Save to cookie (expires in 365 days)
+    document.cookie = `appLanguage=${newLanguage}; max-age=${365 * 24 * 60 * 60}; path=/`;
   };
 
   return (
