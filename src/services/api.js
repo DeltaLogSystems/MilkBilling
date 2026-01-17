@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// const API_BASE_URL = "https://localhost:7226/api";
+//const API_BASE_URL = "https://localhost:7226/api";
 const API_BASE_URL = "https://milkbilling-api.deltalogapp.online/api";
 // Create axios instance
 const api = axios.create({
@@ -312,7 +312,9 @@ export const dashboardAPI = {
 
   getMonthlySoldMilk: async () => {
     const userId = getUserId();
-    const response = await api.get(`/Dashboard/monthly-sold-milk?userId=${userId}`);
+    const response = await api.get(
+      `/Dashboard/monthly-sold-milk?userId=${userId}`
+    );
     return response.data;
   },
 };

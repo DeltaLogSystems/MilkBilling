@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { useAlert } from "../../Hooks/useAlert";
 import billLanguage from "../../language/billLanguage";
 import reportLanguage from "../../language/reportLanguage";
 import { billingAPI, reportAPI } from "../../services/api";
-import Spinner from "../common/Spinner";
-import { useAlert } from "../../Hooks/useAlert";
 import Alert from "../common/Alert";
+import Spinner from "../common/Spinner";
 
 function Bill() {
   const { language } = useLanguage();
@@ -21,7 +21,8 @@ function Bill() {
   // Get previous month name
   const getPreviousMonthName = () => {
     const currentDate = new Date();
-    const previousMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+    const previousMonth =
+      currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
     return reportText.months[previousMonth];
   };
 
@@ -217,17 +218,13 @@ function Bill() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
-        <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-2 md:hidden">
-            <img
-              src="/images/logo.png"
-              alt={text.pageTitle}
-              className="w-10 h-8"
-            />
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
-              {text.pageTitle}
-            </h1>
+        <div className="flex items-center justify-between md:hidden">
+          <div className="flex items-center gap-2 ">
+            <img className="logo" src="/images/logo.png" alt={text.appTitle} />
           </div>
+          <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+            {text.pageTitle}
+          </h1>
           <button
             onClick={handleSave}
             disabled={loading}
@@ -238,7 +235,7 @@ function Bill() {
           </button>
         </div>
 
-        <div className="flex gap-2 mt-3 mb-2">
+        <div className="flex gap-2 mt-0 mb-2">
           <Link
             to="/report"
             className={`flex-1 h-10 flex items-center justify-center rounded-lg text-sm ${
