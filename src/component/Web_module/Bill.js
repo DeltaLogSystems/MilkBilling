@@ -5,11 +5,14 @@ import billLanguage from "../../language/billLanguage";
 import reportLanguage from "../../language/reportLanguage";
 import { billingAPI, reportAPI } from "../../services/api";
 import Spinner from "../common/Spinner";
+import { useAlert } from "../../Hooks/useAlert";
+import Alert from "../common/Alert";
 
 function Bill() {
   const { language } = useLanguage();
   const reportText = reportLanguage[language];
   const text = billLanguage[language];
+  const { showAlert, alertConfig } = useAlert();
 
   const location = useLocation();
   const isReportTabActive = location.pathname === "/report";
@@ -194,11 +197,19 @@ function Bill() {
         });
 
       await Promise.all(paymentPromises);
-      alert("Bill payments saved successfully!");
+      await showAlert({
+        type: "success",
+        title: "Success",
+        message: "Bill payments saved successfully!",
+      });
       loadBills(); // Reload to get updated data
     } catch (error) {
       console.error("Error saving bill payments:", error);
-      alert("Error saving bill payments. Please try again.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Error saving bill payments. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -349,6 +360,9 @@ function Bill() {
           </section>
         )}
       </main>
+
+      {/* Alert Dialog */}
+      {alertConfig && <Alert {...alertConfig} />}
     </>
   );
 }

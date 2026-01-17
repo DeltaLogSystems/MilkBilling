@@ -4,6 +4,8 @@ import { useLanguage } from "../../context/LanguageContext";
 import reportLanguage from "../../language/reportLanguage";
 import { reportAPI } from "../../services/api";
 import Spinner from "../common/Spinner";
+import { useAlert } from "../../Hooks/useAlert";
+import Alert from "../common/Alert";
 
 // ✅ CRITICAL: Store window reference OUTSIDE component to persist across renders
 let whatsappWindow = null;
@@ -11,6 +13,7 @@ let whatsappWindow = null;
 function Report() {
   const { language } = useLanguage();
   const text = reportLanguage[language];
+  const { showAlert, alertConfig } = useAlert();
 
   const location = useLocation();
   const isReportTabActive = location.pathname === "/report";
@@ -91,7 +94,11 @@ function Report() {
       }
     } catch (error) {
       console.error("Error loading reports:", error);
-      alert("Failed to load reports. Please try again.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Failed to load reports. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -123,7 +130,11 @@ function Report() {
 
   const handleSendReport = async (customer) => {
     if (!customer.whatsappNo) {
-      alert(`No WhatsApp number available for ${customer.name}`);
+      await showAlert({
+        type: "warning",
+        title: "Missing Information",
+        message: `No WhatsApp number available for ${customer.name}`,
+      });
       return;
     }
 
@@ -149,14 +160,18 @@ function Report() {
           // ✅ Success feedback without alert (better UX)
           console.log(`Bill sent successfully for ${customer.name}`);
         } else {
-          alert(
-            `Bill generated but WhatsApp URL not available for ${customer.name}`
-          );
+          await showAlert({
+            type: "warning",
+            title: "Warning",
+            message: `Bill generated but WhatsApp URL not available for ${customer.name}`,
+          });
         }
       } else {
-        alert(
-          `Failed to generate bill: ${response?.message || "Unknown error"}`
-        );
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: `Failed to generate bill: ${response?.message || "Unknown error"}`,
+        });
       }
     } catch (error) {
       console.error("Error sending report:", error);
@@ -164,7 +179,11 @@ function Report() {
         error?.response?.data?.message ||
         error?.message ||
         "Failed to send report";
-      alert(`Error: ${errorMessage}`);
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: `Error: ${errorMessage}`,
+      });
     } finally {
       setSendingBillFor(null); // ✅ Clear loading state
     }
@@ -347,6 +366,9 @@ function Report() {
           </div>
         )}
       </main>
+
+      {/* Alert Dialog */}
+      {alertConfig && <Alert {...alertConfig} />}
     </>
   );
 }

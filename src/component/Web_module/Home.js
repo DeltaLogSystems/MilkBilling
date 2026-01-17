@@ -3,6 +3,8 @@ import { useLanguage } from "../../context/LanguageContext";
 import homeLanguage from "../../language/homeLanguage";
 import { customerAPI, dailyMilkAPI } from "../../services/api";
 import Spinner from "../common/Spinner";
+import { useAlert } from "../../Hooks/useAlert";
+import Alert from "../common/Alert";
 
 // Helper: format Date -> "24 July, 2024"
 function formatDisplayDate(date) {
@@ -27,6 +29,7 @@ function toInputDateValue(date) {
 function HomePage() {
   const { language } = useLanguage();
   const text = homeLanguage[language];
+  const { showAlert, alertConfig } = useAlert();
 
   const [dateFilter, setDateFilter] = useState("today");
   const [selectedDate, setSelectedDate] = useState("");
@@ -92,7 +95,11 @@ function HomePage() {
       }
     } catch (error) {
       console.error("Error loading customers:", error);
-      alert("Failed to load customers. Please try again.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Failed to load customers. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -172,7 +179,11 @@ function HomePage() {
     );
 
     if (pickedOnly.getTime() > todayOnly.getTime()) {
-      alert("You cannot select a future date.");
+      await showAlert({
+        type: "warning",
+        title: "Invalid Date",
+        message: "You cannot select a future date.",
+      });
       return;
     }
 
@@ -233,13 +244,25 @@ function HomePage() {
       );
 
       if (response.success) {
-        alert("Daily entries saved successfully!");
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: "Daily entries saved successfully!",
+        });
       } else {
-        alert("Failed to save entries. Please try again.");
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: "Failed to save entries. Please try again.",
+        });
       }
     } catch (error) {
       console.error("Error saving entries:", error);
-      alert("Error saving entries. Please check your connection.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Error saving entries. Please check your connection.",
+      });
     } finally {
       setLoading(false);
     }
@@ -437,6 +460,9 @@ function HomePage() {
           )}
         </section>
       </main>
+
+      {/* Alert Dialog */}
+      {alertConfig && <Alert {...alertConfig} />}
     </>
   );
 }
