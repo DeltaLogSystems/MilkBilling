@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { milkRateAPI } from "../../../services/api";
+import { useAlert } from "../../../Hooks/useAlert";
+import Alert from "../../common/Alert";
 
 function MilkRateMaster({ text }) {
+  const { showAlert, alertConfig } = useAlert();
   const [rateOpen, setRateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [masterCowRate, setMasterCowRate] = useState(0);
@@ -32,13 +35,25 @@ function MilkRateMaster({ text }) {
       );
 
       if (response.success) {
-        alert("Milk rates updated successfully!");
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: "Milk rates updated successfully!",
+        });
       } else {
-        alert("Failed to update rates.");
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: "Failed to update rates.",
+        });
       }
     } catch (error) {
       console.error("Error updating rates:", error);
-      alert("Error updating rates.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Error updating rates.",
+      });
     } finally {
       setLoading(false);
     }
@@ -104,6 +119,9 @@ function MilkRateMaster({ text }) {
           </button>
         </div>
       )}
+
+      {/* Alert Dialog */}
+      {alertConfig && <Alert {...alertConfig} />}
     </section>
   );
 }

@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { purchaseMilkAPI } from "../../../services/api";
+import { useAlert } from "../../../Hooks/useAlert";
+import Alert from "../../common/Alert";
+import ConfirmDialog from "../../common/ConfirmDialog";
 
 function PurchaseMilkEntry({ text }) {
+  const { showAlert, showConfirm, alertConfig, confirmConfig } = useAlert();
   const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +47,11 @@ function PurchaseMilkEntry({ text }) {
   const handleSavePurchase = async () => {
     try {
       if (!purchaseQty || !purchaseRate) {
-        alert("Please enter quantity and rate");
+        await showAlert({
+          type: "warning",
+          title: "Validation Error",
+          message: "Please enter quantity and rate",
+        });
         return;
       }
 
@@ -59,15 +67,27 @@ function PurchaseMilkEntry({ text }) {
       const response = await purchaseMilkAPI.savePurchaseEntry(purchaseData);
 
       if (response.success) {
-        alert("Purchase entry saved successfully!");
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: "Purchase entry saved successfully!",
+        });
         resetPurchaseForm();
         await loadPurchaseEntries();
       } else {
-        alert("Failed to save purchase entry.");
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: "Failed to save purchase entry.",
+        });
       }
     } catch (error) {
       console.error("Error saving purchase:", error);
-      alert("Error saving purchase entry.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Error saving purchase entry.",
+      });
     } finally {
       setLoading(false);
     }
@@ -83,22 +103,34 @@ function PurchaseMilkEntry({ text }) {
   };
 
   const handleDeletePurchaseEntry = async (entry) => {
-    if (
-      !window.confirm(
-        `⚠️ Are you sure you want to delete this purchase entry?`
-      )
-    ) {
+    const confirmed = await showConfirm({
+      type: "error",
+      title: "Delete Purchase Entry",
+      message: "Are you sure you want to delete this purchase entry? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       setLoading(true);
       // Note: You may need to implement a delete API endpoint
-      alert("Delete functionality needs to be implemented in the API");
+      await showAlert({
+        type: "info",
+        title: "Info",
+        message: "Delete functionality needs to be implemented in the API",
+      });
       await loadPurchaseEntries();
     } catch (error) {
       console.error("Error deleting purchase entry:", error);
-      alert("Error deleting purchase entry.");
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: "Error deleting purchase entry.",
+      });
     } finally {
       setLoading(false);
     }
@@ -289,6 +321,10 @@ function PurchaseMilkEntry({ text }) {
           )}
         </div>
       )}
+
+      {/* Alert and Confirm Dialogs */}
+      {alertConfig && <Alert {...alertConfig} />}
+      {confirmConfig && <ConfirmDialog {...confirmConfig} />}
     </section>
   );
 }
