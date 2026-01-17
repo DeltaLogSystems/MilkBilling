@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { useAlert } from "../../Hooks/useAlert";
 import billLanguage from "../../language/billLanguage";
 import reportLanguage from "../../language/reportLanguage";
 import { billingAPI, reportAPI } from "../../services/api";
-import Spinner from "../common/Spinner";
-import { useAlert } from "../../Hooks/useAlert";
 import Alert from "../common/Alert";
+import Spinner from "../common/Spinner";
 
 function Bill() {
   const { language } = useLanguage();
@@ -218,8 +218,8 @@ function Bill() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
-        <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center justify-between md:hidden">
+          <div className="flex items-center gap-2 ">
             <img className="logo" src="/images/logo.png" alt={text.appTitle} />
           </div>
           <h1 className="text-lg font-bold text-slate-900 dark:text-white">

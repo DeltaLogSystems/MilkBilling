@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
+import { useAlert } from "../../Hooks/useAlert";
 import homeLanguage from "../../language/homeLanguage";
 import { customerAPI, dailyMilkAPI } from "../../services/api";
-import Spinner from "../common/Spinner";
-import { useAlert } from "../../Hooks/useAlert";
 import Alert from "../common/Alert";
+import Spinner from "../common/Spinner";
 
 // Helper: format Date -> "24 July, 2024"
 function formatDisplayDate(date) {
@@ -55,12 +55,10 @@ function HomePage() {
     return today;
   }, [dateFilter, today, yesterday, selectedDate]);
 
-  // Load customers on mount
   useEffect(() => {
     loadCustomers();
   }, []);
 
-  // Load entries when date changes
   useEffect(() => {
     if (customers.length > 0) {
       loadDailyEntries();
@@ -86,7 +84,6 @@ function HomePage() {
         }));
         setCustomers(customerData);
 
-        // Initialize quantities
         const initialQty = {};
         customerData.forEach((c) => {
           initialQty[c.id] = c.defaultQty;
@@ -126,7 +123,6 @@ function HomePage() {
           setQuantities(newQty);
           setIsHoliday(holidayFlag || false);
         } else {
-          // Reset to defaults if no entries found
           const defaultQty = {};
           customers.forEach((c) => {
             defaultQty[c.id] = c.defaultQty;
@@ -158,7 +154,7 @@ function HomePage() {
     }));
   };
 
-  const handleCustomDateChange = (e) => {
+  const handleCustomDateChange = async (e) => {
     const value = e.target.value;
     if (!value) {
       setSelectedDate("");
@@ -202,7 +198,6 @@ function HomePage() {
 
   const handleHolidayToggle = () => {
     if (!isHoliday) {
-      // Entering holiday mode - save current quantities and set all to 0
       setSavedQuantities({ ...quantities });
       const zeroQty = {};
       customers.forEach((c) => {
@@ -211,7 +206,6 @@ function HomePage() {
       setQuantities(zeroQty);
       setIsHoliday(true);
     } else {
-      // Exiting holiday mode - restore saved quantities or defaults
       if (Object.keys(savedQuantities).length > 0) {
         setQuantities({ ...savedQuantities });
       } else {
@@ -229,7 +223,6 @@ function HomePage() {
     try {
       setLoading(true);
 
-      // Include all customers, even with 0 quantity
       const entries = customers.map((c) => ({
         customerId: c.id,
         milkType: c.milkType === "cow" ? 0 : 1,
@@ -273,8 +266,8 @@ function HomePage() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
-        <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center justify-between md:hidden">
+          <div className="flex items-center gap-2 ">
             <img className="logo" src="/images/logo.png" alt={text.appTitle} />
           </div>
           <h1 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -373,7 +366,6 @@ function HomePage() {
               {text.dailyEntriesFor} {headingDateText}
             </h2>
 
-            {/* Holiday Toggle Button - Icon Only */}
             <button
               onClick={handleHolidayToggle}
               className={`flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full transition-all duration-300 shadow-md hover:shadow-lg ${
@@ -461,7 +453,6 @@ function HomePage() {
         </section>
       </main>
 
-      {/* Alert Dialog */}
       {alertConfig && <Alert {...alertConfig} />}
     </>
   );
