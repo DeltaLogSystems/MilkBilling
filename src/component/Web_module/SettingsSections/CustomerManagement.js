@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { customerAPI, milkRateAPI } from "../../../services/api";
+import { useAlert } from "../../../Hooks/useAlert";
+import Alert from "../../common/Alert";
+import ConfirmDialog from "../../common/ConfirmDialog";
 
 function CustomerManagement({ text }) {
+  const { showAlert, showConfirm, alertConfig, confirmConfig } = useAlert();
   const [customerMode, setCustomerMode] = useState("buttons");
   const [milkType, setMilkType] = useState("Cow");
   const [useMasterRate, setUseMasterRate] = useState(true);
@@ -254,7 +258,11 @@ function CustomerManagement({ text }) {
       if (customerId === 0) {
         response = await customerAPI.addCustomer(customerData);
         if (response.success) {
-          alert("✅ Customer added successfully!");
+          await showAlert({
+            type: "success",
+            title: "Success",
+            message: "Customer added successfully!",
+          });
           resetCustomerForm();
           await loadCustomerList();
           setCustomerMode("buttons");
@@ -264,7 +272,11 @@ function CustomerManagement({ text }) {
       } else {
         response = await customerAPI.updateCustomer(customerData);
         if (response.success) {
-          alert("✅ Customer updated successfully!");
+          await showAlert({
+            type: "success",
+            title: "Success",
+            message: "Customer updated successfully!",
+          });
           resetCustomerForm();
           await loadCustomerList();
           setCustomerMode("buttons");
@@ -291,9 +303,15 @@ function CustomerManagement({ text }) {
   };
 
   const handleDeleteCustomer = async (customer) => {
-    if (
-      !window.confirm(`⚠️ Are you sure you want to delete ${customer.name}?`)
-    ) {
+    const confirmed = await showConfirm({
+      type: "error",
+      title: "Delete Customer",
+      message: `Are you sure you want to delete ${customer.name}? This action cannot be undone.`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -302,18 +320,29 @@ function CustomerManagement({ text }) {
       const response = await customerAPI.deleteCustomer(customer.id);
 
       if (response.success) {
-        alert("✅ Customer deleted successfully!");
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: "Customer deleted successfully!",
+        });
         await loadDeleteCustomers();
         await loadCustomerList(); // Refresh main customer list too
       } else {
-        alert("❌ " + (response.message || "Failed to delete customer"));
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: response.message || "Failed to delete customer",
+        });
       }
     } catch (error) {
       console.error("Error deleting customer:", error);
-      alert(
-        "❌ Error deleting customer: " +
-          (error.response?.data?.message || error.message)
-      );
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message:
+          "Error deleting customer: " +
+          (error.response?.data?.message || error.message),
+      });
     } finally {
       setLoading(false);
     }
@@ -682,6 +711,10 @@ function CustomerManagement({ text }) {
           </button>
         </div>
       )}
+
+      {/* Alert and Confirm Dialogs */}
+      {alertConfig && <Alert {...alertConfig} />}
+      {confirmConfig && <ConfirmDialog {...confirmConfig} />}
     </section>
   );
 }

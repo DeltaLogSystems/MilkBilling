@@ -1,20 +1,36 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../../services/api";
+import { useAlert } from "../../../Hooks/useAlert";
+import Alert from "../../common/Alert";
+import ConfirmDialog from "../../common/ConfirmDialog";
 
 function LogoutSection({ text }) {
   const navigate = useNavigate();
+  const { showAlert, showConfirm, alertConfig, confirmConfig } = useAlert();
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
-    if (window.confirm(text.logoutConfirmMessage)) {
+    const confirmed = await showConfirm({
+      type: "warning",
+      title: "Logout",
+      message: text.logoutConfirmMessage,
+      confirmText: "Logout",
+      cancelText: "Cancel",
+    });
+
+    if (confirmed) {
       try {
         setLoading(true);
         await authAPI.logout();
         window.location.href = "/login";
       } catch (error) {
         console.error("Logout failed:", error);
-        alert("Logout failed. Please try again.");
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: "Logout failed. Please try again.",
+        });
         setLoading(false);
       }
     }
@@ -37,6 +53,10 @@ function LogoutSection({ text }) {
         <i className="fas fa-sign-out-alt" />
         <span>{text.logoutButton}</span>
       </button>
+
+      {/* Alert and Confirm Dialogs */}
+      {alertConfig && <Alert {...alertConfig} />}
+      {confirmConfig && <ConfirmDialog {...confirmConfig} />}
     </section>
   );
 }

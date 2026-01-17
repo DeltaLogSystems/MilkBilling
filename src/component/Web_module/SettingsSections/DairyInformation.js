@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { dairyInfoAPI } from "../../../services/api";
+import { useAlert } from "../../../Hooks/useAlert";
+import Alert from "../../common/Alert";
 
 function DairyInformation({ text }) {
+  const { showAlert, alertConfig } = useAlert();
   const [dairyOpen, setDairyOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dairyName, setDairyName] = useState("");
@@ -26,7 +29,11 @@ function DairyInformation({ text }) {
   const handleSaveDairy = async () => {
     try {
       if (!dairyName || dairyName.trim() === "") {
-        alert("Dairy name is required");
+        await showAlert({
+          type: "warning",
+          title: "Validation Error",
+          message: "Dairy name is required",
+        });
         return;
       }
 
@@ -46,16 +53,27 @@ function DairyInformation({ text }) {
       const response = await dairyInfoAPI.saveDairyInfo(formData);
 
       if (response.success) {
-        alert("✅ Saved successfully");
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: "Dairy information saved successfully!",
+        });
       } else {
-        alert(response.message || "Save failed");
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: response.message || "Save failed",
+        });
       }
     } catch (err) {
       console.error(err);
-      alert(
-        err.response?.data?.message ||
-          "❌ Upload failed (validation or server error)"
-      );
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message:
+          err.response?.data?.message ||
+          "Upload failed (validation or server error)",
+      });
     } finally {
       setLoading(false);
     }
@@ -129,6 +147,9 @@ function DairyInformation({ text }) {
           </button>
         </div>
       )}
+
+      {/* Alert Dialog */}
+      {alertConfig && <Alert {...alertConfig} />}
     </section>
   );
 }
