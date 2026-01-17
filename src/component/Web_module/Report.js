@@ -175,18 +175,14 @@ function Report() {
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
         <div className="flex items-center justify-between ">
           <div className="flex items-center gap-2 md:hidden">
-            <img
-              src="/images/logo.png"
-              alt={text.pageTitle}
-              className="w-10 h-8"
-            />
+            <img className="logo" src="/images/logo.png" alt={text.appTitle} />
             <h1 className="text-lg font-bold text-slate-900 dark:text-white">
               {text.pageTitle}
             </h1>
           </div>
         </div>
 
-        <div className="flex gap-2 mt-3 mb-2">
+        <div className="flex gap-2 mt-0 mb-2">
           <Link
             to="/report"
             className={`flex-1 h-10 flex items-center justify-center rounded-lg text-sm ${

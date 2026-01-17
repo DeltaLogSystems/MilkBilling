@@ -117,17 +117,13 @@ function Dashboard() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
-        <div className="flex items-center justify-between ">
+        <div className="flex items-center ">
           <div className="flex items-center gap-2 md:hidden">
-            <img
-              src="/images/logo.png"
-              alt={text.pageTitle}
-              className="w-10 h-8"
-            />
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
-              {text.pageTitle}
-            </h1>
+            <img className="logo" src="/images/logo.png" alt={text.appTitle} />
           </div>
+          <h1 className="text-lg font-bold text-center text-slate-900 dark:text-white">
+            {text.pageTitle}
+          </h1>
         </div>
 
         <div className="flex gap-3 mb-3 overflow-x-auto">
@@ -285,14 +281,20 @@ function Dashboard() {
               ) : monthlySoldMilk.length > 0 ? (
                 <div className="space-y-4">
                   {monthlySoldMilk.map((monthData, idx) => {
-                    const maxValue = Math.max(...monthlySoldMilk.map(m => m.totalLiters || 0));
-                    const percentage = maxValue > 0 ? (monthData.totalLiters / maxValue) * 100 : 0;
+                    const maxValue = Math.max(
+                      ...monthlySoldMilk.map((m) => m.totalLiters || 0)
+                    );
+                    const percentage =
+                      maxValue > 0
+                        ? (monthData.totalLiters / maxValue) * 100
+                        : 0;
 
                     return (
                       <div key={idx} className="space-y-1">
                         <div className="flex justify-between items-center text-sm">
                           <span className="font-medium text-slate-700 dark:text-slate-300 w-20">
-                            {text.months[monthData.monthName?.toLowerCase()] || monthData.monthName}
+                            {text.months[monthData.monthName?.toLowerCase()] ||
+                              monthData.monthName}
                           </span>
                           <span className="text-slate-600 dark:text-slate-400">
                             {monthData.totalLiters?.toFixed(1) || 0} L
@@ -304,7 +306,13 @@ function Dashboard() {
                             style={{ width: `${percentage}%` }}
                           >
                             <span className="text-white text-xs font-semibold">
-                              {percentage > 20 ? `₹${monthData.totalAmount?.toLocaleString('en-IN') || 0}` : ''}
+                              {percentage > 20
+                                ? `₹${
+                                    monthData.totalAmount?.toLocaleString(
+                                      "en-IN"
+                                    ) || 0
+                                  }`
+                                : ""}
                             </span>
                           </div>
                         </div>

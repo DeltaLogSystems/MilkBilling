@@ -252,17 +252,11 @@ function HomePage() {
       <header className="sticky top-0 z-10 bg-background-light p-4 pb-2 dark:bg-background-dark md:static md:p-6 md:pb-3">
         <div className="flex items-center justify-between ">
           <div className="flex items-center gap-2 md:hidden">
-            <img
-              className="logo"
-              src="/images/logo.png"
-              alt={text.appTitle}
-              width="40"
-              height="20"
-            />
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white">
-              {text.appTitle}
-            </h1>
+            <img className="logo" src="/images/logo.png" alt={text.appTitle} />
           </div>
+          <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+            {text.appTitle}
+          </h1>
           <button
             onClick={handleSave}
             disabled={loading}

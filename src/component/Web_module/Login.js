@@ -80,6 +80,7 @@ function Login() {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
+            <img className="logo" src="/images/logo.png" alt={text.appTitle} />
             <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
             <p className="text-gray-600 mt-2">Sign in to your account</p>
           </div>
