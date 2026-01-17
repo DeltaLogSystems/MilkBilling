@@ -264,6 +264,23 @@ export const purchaseMilkAPI = {
     return response.data;
   },
 
+  updatePurchaseEntry: async (purchaseData) => {
+    const userId = getUserId();
+    const response = await api.post(
+      `/PurchaseMilk?userId=${userId}`,
+      purchaseData
+    );
+    return response.data;
+  },
+
+  deletePurchaseEntry: async (purchaseEntryId) => {
+    const userId = getUserId();
+    const response = await api.delete(
+      `/PurchaseMilk/${purchaseEntryId}?userId=${userId}`
+    );
+    return response.data;
+  },
+
   getLast5DaysEntries: async () => {
     const userId = getUserId();
     const response = await api.get(`/PurchaseMilk/last5days?userId=${userId}`);
