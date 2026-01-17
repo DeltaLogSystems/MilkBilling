@@ -283,7 +283,9 @@ export const purchaseMilkAPI = {
 
   getLast5DaysEntries: async () => {
     const userId = getUserId();
-    const response = await api.get(`/PurchaseMilk/last5days?userId=${userId}`);
+    const response = await api.get(
+      `/PurchaseMilk/GetlastFivedaysEntris?userId=${userId}`
+    );
     return response.data;
   },
 };
@@ -313,7 +315,7 @@ export const dashboardAPI = {
   getMonthlySoldMilk: async () => {
     const userId = getUserId();
     const response = await api.get(
-      `/Dashboard/monthly-sold-milk?userId=${userId}`
+      `/Dashboard/monthlysoldmilk?userId=${userId}`
     );
     return response.data;
   },

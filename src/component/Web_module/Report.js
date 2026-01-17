@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
+import { useAlert } from "../../Hooks/useAlert";
 import reportLanguage from "../../language/reportLanguage";
 import { reportAPI } from "../../services/api";
-import Spinner from "../common/Spinner";
-import { useAlert } from "../../Hooks/useAlert";
 import Alert from "../common/Alert";
+import Spinner from "../common/Spinner";
 
 // ✅ CRITICAL: Store window reference OUTSIDE component to persist across renders
 let whatsappWindow = null;
@@ -170,7 +170,9 @@ function Report() {
         await showAlert({
           type: "error",
           title: "Error",
-          message: `Failed to generate bill: ${response?.message || "Unknown error"}`,
+          message: `Failed to generate bill: ${
+            response?.message || "Unknown error"
+          }`,
         });
       }
     } catch (error) {
@@ -329,7 +331,7 @@ function Report() {
                         {text.currentBill}:{" "}
                       </span>
                       <span className="font-semibold">
-                        ₹{report.currentBill.toFixed(2)}
+                        ₹{report.currentBill.toFixed(0)}
                       </span>
                     </div>
                     <div>
@@ -341,7 +343,7 @@ function Report() {
                           report.pending > 0 ? "text-red-600" : "text-green-600"
                         }`}
                       >
-                        ₹{report.pending.toFixed(2)}
+                        ₹{report.pending.toFixed(0)}
                       </span>
                     </div>
                     <button
