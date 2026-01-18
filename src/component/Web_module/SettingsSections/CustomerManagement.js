@@ -549,7 +549,7 @@ function CustomerManagement({ text }) {
                 ? "Saving..."
                 : customerId === 0
                 ? text.saveCustomer
-                : "Update Customer"}
+                : text.updateCustomer}
             </button>
             <button
               type="button"
