@@ -386,4 +386,37 @@ export const billingAPI = {
   },
 };
 
+// User Management API (Admin only)
+export const userManagementAPI = {
+  getAllUsers: async () => {
+    const userId = getUserId();
+    const response = await api.get(`/UserManagement/all?adminUserId=${userId}`);
+    return response.data;
+  },
+
+  toggleUserStatus: async (targetUserId, activeStatus) => {
+    const adminUserId = getUserId();
+    const response = await api.put(
+      `/UserManagement/toggle-status?adminUserId=${adminUserId}`,
+      {
+        userId: targetUserId,
+        activeStatus: activeStatus,
+      }
+    );
+    return response.data;
+  },
+
+  setSubscription: async (targetUserId, years) => {
+    const adminUserId = getUserId();
+    const response = await api.put(
+      `/UserManagement/set-subscription?adminUserId=${adminUserId}`,
+      {
+        userId: targetUserId,
+        subscriptionYears: years,
+      }
+    );
+    return response.data;
+  },
+};
+
 export default api;

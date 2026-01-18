@@ -11,6 +11,7 @@ import ProtectedRoute from "./component/Web_module/ProtectedRoute";
 import Register from "./component/Web_module/Register";
 import Report from "./component/Web_module/Report";
 import Settings from "./component/Web_module/Setting";
+import AdminUserManagement from "./component/Web_module/AdminUserManagement";
 import { LanguageProvider } from "./context/LanguageContext";
 import useIsMobile from "./Hooks/useIsMobile";
 import { authAPI } from "./services/api";
@@ -69,6 +70,7 @@ function App() {
                       <Route path="/report" element={<Report />} />
                       <Route path="/bill" element={<Bill />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/admin/users" element={<AdminUserManagement />} />
                     </Routes>
                   </div>
                   <MobileLayout />
@@ -83,6 +85,7 @@ function App() {
                       <Route path="/report" element={<Report />} />
                       <Route path="/bill" element={<Bill />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/admin/users" element={<AdminUserManagement />} />
                     </Routes>
                   </div>
                 </div>
