@@ -13,6 +13,8 @@ function Register() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -102,10 +104,24 @@ function Register() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
+          {/* Logo and Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Create Account</h1>
-            <p className="text-gray-600 mt-2">Sign up to get started</p>
+            <div className="flex justify-center mb-4">
+              <img
+                src="/images/logo.png"
+                alt="Milk Billing Logo"
+                className="w-20 h-16 object-contain"
+              />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Join Milk Billing
+            </h1>
+            <p className="text-gray-600">
+              Start managing your dairy business today
+            </p>
+            <p className="text-sm text-purple-600 mt-1 font-semibold">
+              Create your account
+            </p>
           </div>
 
           {/* Error Message */}
@@ -166,18 +182,32 @@ function Register() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-purple-500"
-                } focus:ring-2 focus:border-transparent outline-none transition`}
-                placeholder="Create a password"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 pr-12 rounded-lg border ${
+                    errors.password
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-purple-500"
+                  } focus:ring-2 focus:border-transparent outline-none transition`}
+                  placeholder="Create a password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
+                  tabIndex={-1}
+                >
+                  <i
+                    className={`fas ${
+                      showPassword ? "fa-eye-slash" : "fa-eye"
+                    } text-lg`}
+                  />
+                </button>
+              </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
               )}
@@ -188,18 +218,32 @@ function Register() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password
               </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 rounded-lg border ${
-                  errors.confirmPassword
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-purple-500"
-                } focus:ring-2 focus:border-transparent outline-none transition`}
-                placeholder="Confirm your password"
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 pr-12 rounded-lg border ${
+                    errors.confirmPassword
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-purple-500"
+                  } focus:ring-2 focus:border-transparent outline-none transition`}
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
+                  tabIndex={-1}
+                >
+                  <i
+                    className={`fas ${
+                      showConfirmPassword ? "fa-eye-slash" : "fa-eye"
+                    } text-lg`}
+                  />
+                </button>
+              </div>
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.confirmPassword}
