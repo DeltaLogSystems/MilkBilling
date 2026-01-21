@@ -419,4 +419,22 @@ export const userManagementAPI = {
   },
 };
 
+// Allowance API
+export const allowanceAPI = {
+  getAllowances: async () => {
+    const userId = getUserId();
+    const response = await api.get(`/Allowance/get?userId=${userId}`);
+    return response.data;
+  },
+
+  saveAllowances: async (allowanceData) => {
+    const userId = getUserId();
+    const response = await api.post(
+      `/Allowance/save?userId=${userId}`,
+      allowanceData
+    );
+    return response.data;
+  },
+};
+
 export default api;

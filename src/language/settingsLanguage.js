@@ -51,6 +51,18 @@ const settingsLanguage = {
     purchaseRate: 'Purchase Rate (₹/Ltr)',
     savePurchaseEntry: 'Save Purchase Entry',
 
+    // Allowance Section
+    allowanceSectionTitle: 'Allowance',
+    transportAllowance: 'Transport Allowance (₹)',
+    packingAllowance: 'Packing Allowance (₹)',
+    otherAllowance: 'Other Allowance (₹)',
+    saveAllowances: 'Save Allowances',
+    allowancesSavedSuccess: 'Allowances saved successfully!',
+    allowancesSaveFailed: 'Failed to save allowances.',
+    success: 'Success',
+    error: 'Error',
+    saving: 'Saving...',
+
     // Logout
     logoutSectionTitle: 'Account',
     logoutButton: 'Logout',
@@ -106,6 +118,18 @@ const settingsLanguage = {
     purchaseLiterQty: 'खरेदी लिटर प्रमाण',
     purchaseRate: 'खरेदी दर (₹/लिटर)',
     savePurchaseEntry: 'खरेदी नोंद जतन करा',
+
+    // Allowance Section
+    allowanceSectionTitle: 'भत्ता',
+    transportAllowance: 'वाहतूक भत्ता (₹)',
+    packingAllowance: 'पॅकिंग भत्ता (₹)',
+    otherAllowance: 'इतर भत्ता (₹)',
+    saveAllowances: 'भत्ते जतन करा',
+    allowancesSavedSuccess: 'भत्ते यशस्वीरित्या जतन केले!',
+    allowancesSaveFailed: 'भत्ते जतन करण्यात अयशस्वी.',
+    success: 'यशस्वी',
+    error: 'त्रुटी',
+    saving: 'जतन करत आहे...',
 
     // Logout
     logoutSectionTitle: 'खाते',

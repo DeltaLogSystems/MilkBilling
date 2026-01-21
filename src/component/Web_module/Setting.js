@@ -6,6 +6,7 @@ import LanguageSection from "./SettingsSections/LanguageSection";
 import LogoutSection from "./SettingsSections/LogoutSection";
 import MilkRateMaster from "./SettingsSections/MilkRateMaster";
 import PurchaseMilkEntry from "./SettingsSections/PurchaseMilkEntry";
+import AllowanceSection from "./SettingsSections/AllowanceSection";
 
 function Settings() {
   const { language } = useLanguage();
@@ -42,6 +43,9 @@ function Settings() {
 
         {/* Purchase Milk Entry */}
         <PurchaseMilkEntry text={text} />
+
+        {/* Allowance Section */}
+        <AllowanceSection text={text} />
 
         {/* Logout Section */}
         <LogoutSection text={text} />
