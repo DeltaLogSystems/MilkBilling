@@ -21,7 +21,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle token expiration
@@ -33,7 +33,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Get userId from localStorage
@@ -68,7 +68,7 @@ export const authAPI = {
     if (response.data.success && response.data.data) {
       localStorage.setItem(
         "milkBillingUser",
-        JSON.stringify(response.data.data)
+        JSON.stringify(response.data.data),
       );
     }
 
@@ -86,7 +86,7 @@ export const authAPI = {
     if (response.data.success && response.data.data) {
       localStorage.setItem(
         "milkBillingUser",
-        JSON.stringify(response.data.data)
+        JSON.stringify(response.data.data),
       );
     }
 
@@ -143,7 +143,7 @@ export const customerAPI = {
     try {
       const response = await api.post(
         `/Customer?userId=${userId}`,
-        customerData
+        customerData,
       );
       return response.data;
     } catch (error) {
@@ -159,7 +159,7 @@ export const customerAPI = {
     const userId = getUserId();
     try {
       const response = await api.delete(
-        `/Customer/${customerId}?userId=${userId}`
+        `/Customer/${customerId}?userId=${userId}`,
       );
       return response.data;
     } catch (error) {
@@ -175,7 +175,7 @@ export const customerAPI = {
     try {
       const response = await api.put(
         `/Customer/${customerData.customerId}?userId=${userId}`,
-        customerData
+        customerData,
       );
       return response.data;
     } catch (error) {
@@ -210,7 +210,7 @@ export const dailyMilkAPI = {
         ? entryDate.toISOString().split("T")[0]
         : entryDate;
     const response = await api.get(
-      `/DailyMilkEntry?entryDate=${dateStr}&userId=${userId}`
+      `/DailyMilkEntry?entryDate=${dateStr}&userId=${userId}`,
     );
     return response.data;
   },
@@ -244,12 +244,9 @@ export const dairyInfoAPI = {
 
   saveDairyInfo: async (formData) => {
     const userId = getUserId();
-    const response = await api.post(`/DairyInfo?userId=${userId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data; // IMPORTANT
+    // Remove headers - let axios handle it automatically
+    const response = await api.post(`/DairyInfo?userId=${userId}`, formData);
+    return response.data;
   },
 };
 
@@ -259,7 +256,7 @@ export const purchaseMilkAPI = {
     const userId = getUserId();
     const response = await api.post(
       `/PurchaseMilk?userId=${userId}`,
-      purchaseData
+      purchaseData,
     );
     return response.data;
   },
@@ -268,7 +265,7 @@ export const purchaseMilkAPI = {
     const userId = getUserId();
     const response = await api.post(
       `/PurchaseMilk?userId=${userId}`,
-      purchaseData
+      purchaseData,
     );
     return response.data;
   },
@@ -276,7 +273,7 @@ export const purchaseMilkAPI = {
   deletePurchaseEntry: async (purchaseEntryId) => {
     const userId = getUserId();
     const response = await api.delete(
-      `/PurchaseMilk/${purchaseEntryId}?userId=${userId}`
+      `/PurchaseMilk/${purchaseEntryId}?userId=${userId}`,
     );
     return response.data;
   },
@@ -284,7 +281,7 @@ export const purchaseMilkAPI = {
   getLast5DaysEntries: async () => {
     const userId = getUserId();
     const response = await api.get(
-      `/PurchaseMilk/GetlastFivedaysEntris?userId=${userId}`
+      `/PurchaseMilk/GetlastFivedaysEntris?userId=${userId}`,
     );
     return response.data;
   },
@@ -298,7 +295,7 @@ export const dashboardAPI = {
     month,
     quarter,
     startDate,
-    endDate
+    endDate,
   ) => {
     const userId = getUserId();
     const response = await api.post(`/Dashboard?userId=${userId}`, {
@@ -315,7 +312,7 @@ export const dashboardAPI = {
   getMonthlySoldMilk: async () => {
     const userId = getUserId();
     const response = await api.get(
-      `/Dashboard/monthlysoldmilk?userId=${userId}`
+      `/Dashboard/monthlysoldmilk?userId=${userId}`,
     );
     return response.data;
   },
@@ -330,7 +327,7 @@ export const reportAPI = {
     month,
     quarter,
     startDate,
-    endDate
+    endDate,
   ) => {
     const userId = getUserId();
     const response = await api.post(`/Report/customer-bills?userId=${userId}`, {
@@ -350,7 +347,7 @@ export const reportAPI = {
     const response = await api.post(
       `/Report/send-monthly-bill/${customerId}?userId=${userId}`,
       {},
-      { timeout: 60000 } // 60 second timeout for this specific request
+      { timeout: 60000 }, // 60 second timeout for this specific request
     );
     return response.data;
   },
@@ -359,7 +356,7 @@ export const reportAPI = {
     const userId = getUserId();
     const response = await api.get(
       `/Report/download-bill/${customerId}?userId=${userId}`,
-      { responseType: "blob" }
+      { responseType: "blob" },
     );
 
     const url = window.URL.createObjectURL(new Blob([response]));
@@ -380,7 +377,7 @@ export const billingAPI = {
     const userId = getUserId();
     const response = await api.post(
       `/Billing/payment?userId=${userId}`,
-      paymentData
+      paymentData,
     );
     return response.data;
   },
@@ -401,7 +398,7 @@ export const userManagementAPI = {
       {
         userId: targetUserId,
         activeStatus: activeStatus,
-      }
+      },
     );
     return response.data;
   },
@@ -413,7 +410,7 @@ export const userManagementAPI = {
       {
         userId: targetUserId,
         subscriptionYears: years,
-      }
+      },
     );
     return response.data;
   },
@@ -431,7 +428,7 @@ export const allowanceAPI = {
     const userId = getUserId();
     const response = await api.post(
       `/Allowance/save?userId=${userId}`,
-      allowanceData
+      allowanceData,
     );
     return response.data;
   },
