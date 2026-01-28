@@ -244,8 +244,12 @@ export const dairyInfoAPI = {
 
   saveDairyInfo: async (formData) => {
     const userId = getUserId();
-    // Remove headers - let axios handle it automatically
-    const response = await api.post(`/DairyInfo?userId=${userId}`, formData);
+    // ✅ FIX: Remove Content-Type header for FormData - let browser set it with boundary
+    const response = await api.post(`/DairyInfo?userId=${userId}`, formData, {
+      headers: {
+        "Content-Type": undefined, // This removes the default JSON header
+      },
+    });
     return response.data;
   },
 };
