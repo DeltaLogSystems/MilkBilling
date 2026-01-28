@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
 import settingsLanguage from "../../language/settingsLanguage";
+import AllowanceSection from "./SettingsSections/AllowanceSection";
 import CustomerManagement from "./SettingsSections/CustomerManagement";
 import DairyInformation from "./SettingsSections/DairyInformation";
 import LanguageSection from "./SettingsSections/LanguageSection";
 import LogoutSection from "./SettingsSections/LogoutSection";
 import MilkRateMaster from "./SettingsSections/MilkRateMaster";
 import PurchaseMilkEntry from "./SettingsSections/PurchaseMilkEntry";
-import AllowanceSection from "./SettingsSections/AllowanceSection";
 
 function Settings() {
   const { language } = useLanguage();

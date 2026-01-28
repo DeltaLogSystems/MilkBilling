@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { purchaseMilkAPI } from "../../../services/api";
+import { useEffect, useState } from "react";
 import { useAlert } from "../../../Hooks/useAlert";
+import { purchaseMilkAPI } from "../../../services/api";
 import Alert from "../../common/Alert";
 import ConfirmDialog from "../../common/ConfirmDialog";
 
@@ -14,7 +14,7 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
   const [purchaseQty, setPurchaseQty] = useState("");
   const [purchaseRate, setPurchaseRate] = useState("");
   const [purchaseEntryDate, setPurchaseEntryDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [purchaseEntries, setPurchaseEntries] = useState([]);
 
@@ -75,9 +75,10 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
         await showAlert({
           type: "success",
           title: "Success",
-          message: purchaseEntryId === 0
-            ? "Purchase entry saved successfully!"
-            : "Purchase entry updated successfully!",
+          message:
+            purchaseEntryId === 0
+              ? "Purchase entry saved successfully!"
+              : "Purchase entry updated successfully!",
         });
         resetPurchaseForm();
         await loadPurchaseEntries();
@@ -113,7 +114,8 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
     const confirmed = await showConfirm({
       type: "error",
       title: "Delete Purchase Entry",
-      message: "Are you sure you want to delete this purchase entry? This action cannot be undone.",
+      message:
+        "Are you sure you want to delete this purchase entry? This action cannot be undone.",
       confirmText: "Delete",
       cancelText: "Cancel",
     });
@@ -124,7 +126,9 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
 
     try {
       setLoading(true);
-      const response = await purchaseMilkAPI.deletePurchaseEntry(entry.purchaseEntryId);
+      const response = await purchaseMilkAPI.deletePurchaseEntry(
+        entry.purchaseEntryId,
+      );
 
       if (response.success) {
         await showAlert({
@@ -165,9 +169,7 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
           onClick={onToggle}
         >
           <i
-            className={`fas ${
-              isOpen ? "fa-chevron-up" : "fa-chevron-down"
-            }`}
+            className={`fas ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
           />
         </button>
       </div>
@@ -182,15 +184,11 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
               </label>
               <select
                 value={purchaseMilkType}
-                onChange={(e) =>
-                  setPurchaseMilkType(parseInt(e.target.value))
-                }
+                onChange={(e) => setPurchaseMilkType(parseInt(e.target.value))}
                 className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               >
                 <option value={0}>{text.milkTypeCow || "Cow"}</option>
-                <option value={1}>
-                  {text.milkTypeBuffalo || "Buffalo"}
-                </option>
+                <option value={1}>{text.milkTypeBuffalo || "Buffalo"}</option>
               </select>
             </div>
 
@@ -242,8 +240,8 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
                 {loading
                   ? "Saving..."
                   : purchaseEntryId === 0
-                  ? text.savePurchaseEntry || "Save Entry"
-                  : "Update Entry"}
+                    ? text.savePurchaseEntry || "Save Entry"
+                    : "Update Entry"}
               </button>
               {purchaseEntryId > 0 && (
                 <button
@@ -311,9 +309,7 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
                         </button>
                       </td>
                       <td className="px-3 py-2 text-slate-900 dark:text-white">
-                        {new Date(entry.entryDate).toLocaleDateString(
-                          "en-IN"
-                        )}
+                        {new Date(entry.entryDate).toLocaleDateString("en-IN")}
                       </td>
                       <td className="px-3 py-2 text-slate-900 dark:text-white">
                         {entry.milkType === 0 ? "Cow" : "Buffalo"}
@@ -325,9 +321,9 @@ function PurchaseMilkEntry({ text, isOpen, onToggle }) {
                         {entry.purchaseRate.toFixed(2)}
                       </td>
                       <td className="px-3 py-2 text-right text-slate-900 dark:text-white font-semibold">
-                        {(
-                          entry.purchaseQtyLiters * entry.purchaseRate
-                        ).toFixed(2)}
+                        {(entry.purchaseQtyLiters * entry.purchaseRate).toFixed(
+                          2,
+                        )}
                       </td>
                     </tr>
                   ))}

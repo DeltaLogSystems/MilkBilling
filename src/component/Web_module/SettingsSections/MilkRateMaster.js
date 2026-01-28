@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { milkRateAPI } from "../../../services/api";
+import { useEffect, useState } from "react";
 import { useAlert } from "../../../Hooks/useAlert";
+import { milkRateAPI } from "../../../services/api";
 import Alert from "../../common/Alert";
 
 function MilkRateMaster({ text, isOpen, onToggle }) {
@@ -32,7 +32,7 @@ function MilkRateMaster({ text, isOpen, onToggle }) {
       setLoading(true);
       const response = await milkRateAPI.updateMilkRates(
         masterCowRate,
-        masterBuffaloRate
+        masterBuffaloRate,
       );
 
       if (response.success) {
@@ -73,9 +73,7 @@ function MilkRateMaster({ text, isOpen, onToggle }) {
           onClick={onToggle}
         >
           <i
-            className={`fas ${
-              isOpen ? "fa-chevron-up" : "fa-chevron-down"
-            }`}
+            className={`fas ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
           />
         </button>
       </div>
@@ -103,9 +101,7 @@ function MilkRateMaster({ text, isOpen, onToggle }) {
               type="number"
               step="0.01"
               value={masterBuffaloRate}
-              onChange={(e) =>
-                setMasterBuffaloRate(parseFloat(e.target.value))
-              }
+              onChange={(e) => setMasterBuffaloRate(parseFloat(e.target.value))}
               className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
