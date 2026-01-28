@@ -4,7 +4,7 @@ import { useAlert } from "../../../Hooks/useAlert";
 import Alert from "../../common/Alert";
 import ConfirmDialog from "../../common/ConfirmDialog";
 
-function AllowanceSection({ text }) {
+function AllowanceSection({ text, isOpen, onToggle }) {
   const { showAlert, alertConfig, confirmConfig } = useAlert();
   const [loading, setLoading] = useState(false);
   const [allowances, setAllowances] = useState({
@@ -14,8 +14,10 @@ function AllowanceSection({ text }) {
   });
 
   useEffect(() => {
-    loadAllowances();
-  }, []);
+    if (isOpen) {
+      loadAllowances();
+    }
+  }, [isOpen]);
 
   const loadAllowances = async () => {
     try {
@@ -87,66 +89,79 @@ function AllowanceSection({ text }) {
             <i className="fas fa-hand-holding-usd text-primary" />
             <span>{text.allowanceSectionTitle}</span>
           </h2>
+          <button
+            type="button"
+            className="text-primary hover:bg-primary/10 p-2 rounded-lg transition"
+            onClick={onToggle}
+          >
+            <i
+              className={`fas ${
+                isOpen ? "fa-chevron-up" : "fa-chevron-down"
+              }`}
+            />
+          </button>
         </div>
 
-        <div className="space-y-4">
-          {/* Transport Allowance */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
-              {text.transportAllowance}
-            </label>
-            <input
-              type="text"
-              value={allowances.transportAllowance}
-              onChange={(e) => handleInputChange("transportAllowance", e.target.value)}
-              placeholder="0.00"
-              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              disabled={loading}
-            />
-          </div>
+        {isOpen && (
+          <div className="space-y-4">
+            {/* Transport Allowance */}
+            <div className="flex flex-col md:flex-row md:items-center gap-3">
+              <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                {text.transportAllowance}
+              </label>
+              <input
+                type="text"
+                value={allowances.transportAllowance}
+                onChange={(e) => handleInputChange("transportAllowance", e.target.value)}
+                placeholder="0.00"
+                className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                disabled={loading}
+              />
+            </div>
 
-          {/* Packing Allowance */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
-              {text.packingAllowance}
-            </label>
-            <input
-              type="text"
-              value={allowances.packingAllowance}
-              onChange={(e) => handleInputChange("packingAllowance", e.target.value)}
-              placeholder="0.00"
-              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              disabled={loading}
-            />
-          </div>
+            {/* Packing Allowance */}
+            <div className="flex flex-col md:flex-row md:items-center gap-3">
+              <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                {text.packingAllowance}
+              </label>
+              <input
+                type="text"
+                value={allowances.packingAllowance}
+                onChange={(e) => handleInputChange("packingAllowance", e.target.value)}
+                placeholder="0.00"
+                className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                disabled={loading}
+              />
+            </div>
 
-          {/* Other Allowance */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
-              {text.otherAllowance}
-            </label>
-            <input
-              type="text"
-              value={allowances.otherAllowance}
-              onChange={(e) => handleInputChange("otherAllowance", e.target.value)}
-              placeholder="0.00"
-              className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              disabled={loading}
-            />
-          </div>
+            {/* Other Allowance */}
+            <div className="flex flex-col md:flex-row md:items-center gap-3">
+              <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">
+                {text.otherAllowance}
+              </label>
+              <input
+                type="text"
+                value={allowances.otherAllowance}
+                onChange={(e) => handleInputChange("otherAllowance", e.target.value)}
+                placeholder="0.00"
+                className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                disabled={loading}
+              />
+            </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end pt-2">
-            <button
-              onClick={handleSaveAllowances}
-              disabled={loading}
-              className="bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-6 rounded-lg flex items-center gap-2 text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <i className="fas fa-save" />
-              {loading ? text.saving || "Saving..." : text.saveAllowances}
-            </button>
+            {/* Save Button */}
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={handleSaveAllowances}
+                disabled={loading}
+                className="bg-primary hover:bg-[#007aa3] text-white font-semibold py-2.5 px-6 rounded-lg flex items-center gap-2 text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <i className="fas fa-save" />
+                {loading ? text.saving || "Saving..." : text.saveAllowances}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* Alert and Confirm Dialogs */}

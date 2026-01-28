@@ -4,9 +4,8 @@ import { useAlert } from "../../../Hooks/useAlert";
 import Alert from "../../common/Alert";
 import ConfirmDialog from "../../common/ConfirmDialog";
 
-function PurchaseMilkEntry({ text }) {
+function PurchaseMilkEntry({ text, isOpen, onToggle }) {
   const { showAlert, showConfirm, alertConfig, confirmConfig } = useAlert();
-  const [purchaseOpen, setPurchaseOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Purchase entry states
@@ -20,10 +19,10 @@ function PurchaseMilkEntry({ text }) {
   const [purchaseEntries, setPurchaseEntries] = useState([]);
 
   useEffect(() => {
-    if (purchaseOpen) {
+    if (isOpen) {
       loadPurchaseEntries();
     }
-  }, [purchaseOpen]);
+  }, [isOpen]);
 
   const loadPurchaseEntries = async () => {
     try {
@@ -163,17 +162,17 @@ function PurchaseMilkEntry({ text }) {
         <button
           type="button"
           className="text-primary hover:bg-primary/10 p-2 rounded-lg transition"
-          onClick={() => setPurchaseOpen((v) => !v)}
+          onClick={onToggle}
         >
           <i
             className={`fas ${
-              purchaseOpen ? "fa-chevron-up" : "fa-chevron-down"
+              isOpen ? "fa-chevron-up" : "fa-chevron-down"
             }`}
           />
         </button>
       </div>
 
-      {purchaseOpen && (
+      {isOpen && (
         <div className="space-y-4">
           {/* Form */}
           <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">

@@ -3,17 +3,18 @@ import { dairyInfoAPI } from "../../../services/api";
 import { useAlert } from "../../../Hooks/useAlert";
 import Alert from "../../common/Alert";
 
-function DairyInformation({ text }) {
+function DairyInformation({ text, isOpen, onToggle }) {
   const { showAlert, alertConfig } = useAlert();
-  const [dairyOpen, setDairyOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dairyName, setDairyName] = useState("");
   const [dairyLogoFile, setDairyLogoFile] = useState(null);
   const [qrFile, setQrFile] = useState(null);
 
   useEffect(() => {
-    loadDairyInfo();
-  }, []);
+    if (isOpen) {
+      loadDairyInfo();
+    }
+  }, [isOpen]);
 
   const loadDairyInfo = async () => {
     try {
@@ -89,17 +90,17 @@ function DairyInformation({ text }) {
         <button
           type="button"
           className="text-primary hover:bg-primary/10 p-2 rounded-lg transition"
-          onClick={() => setDairyOpen((v) => !v)}
+          onClick={onToggle}
         >
           <i
             className={`fas ${
-              dairyOpen ? "fa-chevron-up" : "fa-chevron-down"
+              isOpen ? "fa-chevron-up" : "fa-chevron-down"
             }`}
           />
         </button>
       </div>
 
-      {dairyOpen && (
+      {isOpen && (
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center gap-2">
             <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">

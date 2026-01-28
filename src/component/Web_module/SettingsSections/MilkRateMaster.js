@@ -3,16 +3,17 @@ import { milkRateAPI } from "../../../services/api";
 import { useAlert } from "../../../Hooks/useAlert";
 import Alert from "../../common/Alert";
 
-function MilkRateMaster({ text }) {
+function MilkRateMaster({ text, isOpen, onToggle }) {
   const { showAlert, alertConfig } = useAlert();
-  const [rateOpen, setRateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [masterCowRate, setMasterCowRate] = useState(0);
   const [masterBuffaloRate, setMasterBuffaloRate] = useState(0);
 
   useEffect(() => {
-    loadMilkRates();
-  }, []);
+    if (isOpen) {
+      loadMilkRates();
+    }
+  }, [isOpen]);
 
   const loadMilkRates = async () => {
     try {
@@ -69,17 +70,17 @@ function MilkRateMaster({ text }) {
         <button
           type="button"
           className="text-primary hover:bg-primary/10 p-2 rounded-lg transition"
-          onClick={() => setRateOpen((v) => !v)}
+          onClick={onToggle}
         >
           <i
             className={`fas ${
-              rateOpen ? "fa-chevron-up" : "fa-chevron-down"
+              isOpen ? "fa-chevron-up" : "fa-chevron-down"
             }`}
           />
         </button>
       </div>
 
-      {rateOpen && (
+      {isOpen && (
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center gap-2">
             <label className="w-full md:w-52 text-sm font-medium text-slate-700 dark:text-slate-300">

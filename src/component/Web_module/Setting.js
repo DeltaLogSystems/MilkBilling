@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
 import settingsLanguage from "../../language/settingsLanguage";
 import CustomerManagement from "./SettingsSections/CustomerManagement";
@@ -11,6 +12,11 @@ import AllowanceSection from "./SettingsSections/AllowanceSection";
 function Settings() {
   const { language } = useLanguage();
   const text = settingsLanguage[language];
+  const [openSection, setOpenSection] = useState(null);
+
+  const handleToggleSection = (sectionName) => {
+    setOpenSection((prev) => (prev === sectionName ? null : sectionName));
+  };
 
   return (
     <>
@@ -36,16 +42,32 @@ function Settings() {
         <CustomerManagement text={text} />
 
         {/* Milk Rate Master */}
-        <MilkRateMaster text={text} />
+        <MilkRateMaster
+          text={text}
+          isOpen={openSection === "milkRate"}
+          onToggle={() => handleToggleSection("milkRate")}
+        />
 
         {/* Dairy Information */}
-        <DairyInformation text={text} />
+        <DairyInformation
+          text={text}
+          isOpen={openSection === "dairyInfo"}
+          onToggle={() => handleToggleSection("dairyInfo")}
+        />
 
         {/* Purchase Milk Entry */}
-        <PurchaseMilkEntry text={text} />
+        <PurchaseMilkEntry
+          text={text}
+          isOpen={openSection === "purchase"}
+          onToggle={() => handleToggleSection("purchase")}
+        />
 
         {/* Allowance Section */}
-        <AllowanceSection text={text} />
+        <AllowanceSection
+          text={text}
+          isOpen={openSection === "allowance"}
+          onToggle={() => handleToggleSection("allowance")}
+        />
 
         {/* Logout Section */}
         <LogoutSection text={text} />
