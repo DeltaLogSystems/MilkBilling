@@ -8,6 +8,7 @@ import LanguageSection from "./SettingsSections/LanguageSection";
 import LogoutSection from "./SettingsSections/LogoutSection";
 import MilkRateMaster from "./SettingsSections/MilkRateMaster";
 import PurchaseMilkEntry from "./SettingsSections/PurchaseMilkEntry";
+import UserManagementSection from "./SettingsSections/UserManagementSection";
 
 function Settings() {
   const { language } = useLanguage();
@@ -68,6 +69,9 @@ function Settings() {
           isOpen={openSection === "allowance"}
           onToggle={() => handleToggleSection("allowance")}
         />
+
+        {/* User Management Section (Admin Only) */}
+        <UserManagementSection text={text} />
 
         {/* Logout Section */}
         <LogoutSection text={text} />
