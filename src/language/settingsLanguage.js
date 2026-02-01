@@ -63,6 +63,15 @@ const settingsLanguage = {
     error: 'Error',
     saving: 'Saving...',
 
+    // User Management (Admin Only)
+    userManagementTitle: 'User Management',
+    userManagementDescription: 'Manage all user accounts, passwords, and subscriptions from one place.',
+    viewAllUsers: 'View all users',
+    activateDeactivateUsers: 'Activate/Deactivate users',
+    resetPasswords: 'Reset user passwords',
+    manageSubscriptions: 'Manage subscriptions',
+    openUserManagement: 'Open User Management',
+
     // Logout
     logoutSectionTitle: 'Account',
     logoutButton: 'Logout',
@@ -130,6 +139,15 @@ const settingsLanguage = {
     success: 'यशस्वी',
     error: 'त्रुटी',
     saving: 'जतन करत आहे...',
+
+    // User Management (Admin Only)
+    userManagementTitle: 'वापरकर्ता व्यवस्थापन',
+    userManagementDescription: 'एका ठिकाणाहून सर्व वापरकर्ता खाती, पासवर्ड आणि सदस्यता व्यवस्थापित करा.',
+    viewAllUsers: 'सर्व वापरकर्ते पहा',
+    activateDeactivateUsers: 'वापरकर्ते सक्रिय/निष्क्रिय करा',
+    resetPasswords: 'वापरकर्ता पासवर्ड रीसेट करा',
+    manageSubscriptions: 'सदस्यता व्यवस्थापित करा',
+    openUserManagement: 'वापरकर्ता व्यवस्थापन उघडा',
 
     // Logout
     logoutSectionTitle: 'खाते',

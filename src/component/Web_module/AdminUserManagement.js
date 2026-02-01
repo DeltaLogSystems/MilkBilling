@@ -149,10 +149,72 @@ function AdminUserManagement() {
     }
   };
 
+  const handleResetPassword = async (user) => {
+    const newPassword = prompt(`Enter new password for user "${user.userName}":`);
+
+    if (!newPassword || newPassword.trim() === "") {
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      await showAlert({
+        type: "error",
+        title: "Invalid Password",
+        message: "Password must be at least 6 characters long.",
+      });
+      return;
+    }
+
+    const confirmed = await showConfirm({
+      type: "warning",
+      title: "Reset Password",
+      message: `Are you sure you want to reset password for user "${user.userName}"?`,
+      confirmText: "Reset Password",
+      cancelText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+      const response = await userManagementAPI.resetPassword(
+        user.userId,
+        newPassword
+      );
+
+      // Handle response
+      if (response === true || response.success === true || response.success) {
+        await showAlert({
+          type: "success",
+          title: "Success",
+          message: `Password reset successfully for user "${user.userName}"!`,
+        });
+      } else {
+        await showAlert({
+          type: "error",
+          title: "Error",
+          message: response.message || "Failed to reset password.",
+        });
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      await showAlert({
+        type: "error",
+        title: "Error",
+        message: error.response?.data?.message || "Error resetting password.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredUsers = users.filter(
     (user) =>
       user.userName?.toLowerCase().includes(search.toLowerCase()) ||
       user.email?.toLowerCase().includes(search.toLowerCase())
+  ).filter((user) =>
+    // Exclude admin user from the list
+    user.userId !== 1 && user.userName?.toLowerCase() !== 'admin'
   );
 
   return (
@@ -243,6 +305,9 @@ function AdminUserManagement() {
                       <th className="px-2 md:px-3 py-2 text-left text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase hidden md:table-cell">
                         Email
                       </th>
+                      <th className="px-2 md:px-3 py-2 text-center text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase hidden lg:table-cell">
+                        Password
+                      </th>
                       <th className="px-2 md:px-3 py-2 text-center text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                         Status
                       </th>
@@ -279,6 +344,17 @@ function AdminUserManagement() {
                           </td>
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400 hidden md:table-cell">
                             {user.email}
+                          </td>
+                          <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center hidden lg:table-cell">
+                            <button
+                              onClick={() => handleResetPassword(user)}
+                              className="px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white text-[10px] rounded transition"
+                              disabled={loading}
+                              title="Reset Password"
+                            >
+                              <i className="fas fa-key mr-1" />
+                              Reset
+                            </button>
                           </td>
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center">
                             <span
@@ -336,7 +412,7 @@ function AdminUserManagement() {
                     ) : (
                       <tr>
                         <td
-                          colSpan="7"
+                          colSpan="8"
                           className="px-3 py-12 text-center text-gray-500 dark:text-gray-400"
                         >
                           <i className="fas fa-users text-4xl mb-3 block opacity-50" />
