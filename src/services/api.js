@@ -386,28 +386,42 @@ export const billingAPI = {
 
 // User Management API (Admin only)
 export const userManagementAPI = {
-  getAllUsers: async () => {
-    const userId = getUserId();
-    const response = await api.get(`/UserManagement/all?adminUserId=${userId}`);
+  // Admin login
+  adminLogin: async (userName, password) => {
+    const response = await api.post("/Admin/login", {
+      userName: userName,
+      password: password,
+    });
     return response.data;
   },
 
+  // Get all users for admin panel
+  getAllUsers: async () => {
+    const response = await api.get("/Admin/users");
+    return response.data;
+  },
+
+  // Toggle user active status
   toggleUserStatus: async (targetUserId, activeStatus) => {
-    const adminUserId = getUserId();
-    const response = await api.put(
-      `/UserManagement/toggle-status?adminUserId=${adminUserId}`,
-      {
-        userId: targetUserId,
-        activeStatus: activeStatus,
-      }
+    const response = await api.post(
+      `/Admin/toggle-status?userId=${targetUserId}&activeStatus=${activeStatus}`
     );
     return response.data;
   },
 
+  // Reset user password
+  resetPassword: async (targetUserId, newPassword) => {
+    const response = await api.post("/Admin/reset-password", {
+      userId: targetUserId,
+      newPassword: newPassword,
+    });
+    return response.data;
+  },
+
+  // Set subscription (keeping this for future use)
   setSubscription: async (targetUserId, years) => {
-    const adminUserId = getUserId();
     const response = await api.put(
-      `/UserManagement/set-subscription?adminUserId=${adminUserId}`,
+      `/UserManagement/set-subscription`,
       {
         userId: targetUserId,
         subscriptionYears: years,

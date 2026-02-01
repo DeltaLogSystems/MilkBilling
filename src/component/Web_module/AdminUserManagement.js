@@ -39,15 +39,19 @@ function AdminUserManagement() {
     try {
       setLoading(true);
       const response = await userManagementAPI.getAllUsers();
-      if (response.success) {
-        setUsers(response.data);
+      // API returns { users: [...], totalCount: 10 }
+      if (response && response.users) {
+        setUsers(response.users);
+      } else if (response.success && response.data) {
+        // Fallback for old API format
+        setUsers(Array.isArray(response.data) ? response.data : []);
       }
     } catch (error) {
       console.error("Error loading users:", error);
       await showAlert({
         type: "error",
         title: "Error",
-        message: "Failed to load users.",
+        message: error.response?.data?.message || "Failed to load users.",
       });
     } finally {
       setLoading(false);
@@ -73,7 +77,8 @@ function AdminUserManagement() {
         !user.activeStatus
       );
 
-      if (response.success) {
+      // Handle response - API might return success directly or in response.success
+      if (response === true || response.success === true || response.success) {
         await showAlert({
           type: "success",
           title: "Success",
@@ -92,7 +97,7 @@ function AdminUserManagement() {
       await showAlert({
         type: "error",
         title: "Error",
-        message: `Error ${action}ing user.`,
+        message: error.response?.data?.message || `Error ${action}ing user.`,
       });
     } finally {
       setLoading(false);
@@ -117,7 +122,8 @@ function AdminUserManagement() {
         years
       );
 
-      if (response.success) {
+      // Handle response - API might return success directly or in response.success
+      if (response === true || response.success === true || response.success) {
         await showAlert({
           type: "success",
           title: "Success",
@@ -136,7 +142,7 @@ function AdminUserManagement() {
       await showAlert({
         type: "error",
         title: "Error",
-        message: "Error setting subscription.",
+        message: error.response?.data?.message || "Error setting subscription.",
       });
     } finally {
       setLoading(false);
