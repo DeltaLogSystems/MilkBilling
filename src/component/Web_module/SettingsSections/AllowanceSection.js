@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { allowanceAPI } from "../../../services/api";
+import { useEffect, useState } from "react";
 import { useAlert } from "../../../Hooks/useAlert";
+import { allowanceAPI } from "../../../services/api";
 import Alert from "../../common/Alert";
 import ConfirmDialog from "../../common/ConfirmDialog";
 
@@ -60,13 +60,17 @@ function AllowanceSection({ text, isOpen, onToggle }) {
         await showAlert({
           type: "success",
           title: text.success || "Success",
-          message: text.allowancesSavedSuccess || "Allowances saved successfully!",
+          message:
+            text.allowancesSavedSuccess || "Allowances saved successfully!",
         });
       } else {
         await showAlert({
           type: "error",
           title: text.error || "Error",
-          message: response.message || text.allowancesSaveFailed || "Failed to save allowances.",
+          message:
+            response.message ||
+            text.allowancesSaveFailed ||
+            "Failed to save allowances.",
         });
       }
     } catch (error) {
@@ -95,9 +99,7 @@ function AllowanceSection({ text, isOpen, onToggle }) {
             onClick={onToggle}
           >
             <i
-              className={`fas ${
-                isOpen ? "fa-chevron-up" : "fa-chevron-down"
-              }`}
+              className={`fas ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
             />
           </button>
         </div>
@@ -112,7 +114,9 @@ function AllowanceSection({ text, isOpen, onToggle }) {
               <input
                 type="text"
                 value={allowances.transportAllowance}
-                onChange={(e) => handleInputChange("transportAllowance", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("transportAllowance", e.target.value)
+                }
                 placeholder="0.00"
                 className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
@@ -127,7 +131,9 @@ function AllowanceSection({ text, isOpen, onToggle }) {
               <input
                 type="text"
                 value={allowances.packingAllowance}
-                onChange={(e) => handleInputChange("packingAllowance", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("packingAllowance", e.target.value)
+                }
                 placeholder="0.00"
                 className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}
@@ -142,7 +148,9 @@ function AllowanceSection({ text, isOpen, onToggle }) {
               <input
                 type="text"
                 value={allowances.otherAllowance}
-                onChange={(e) => handleInputChange("otherAllowance", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("otherAllowance", e.target.value)
+                }
                 placeholder="0.00"
                 className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={loading}

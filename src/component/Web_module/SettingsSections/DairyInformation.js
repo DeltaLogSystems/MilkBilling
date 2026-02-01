@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { dairyInfoAPI } from "../../../services/api";
+import { useEffect, useState } from "react";
 import { useAlert } from "../../../Hooks/useAlert";
+import { dairyInfoAPI } from "../../../services/api";
 import Alert from "../../common/Alert";
 
 function DairyInformation({ text, isOpen, onToggle }) {
@@ -93,9 +93,7 @@ function DairyInformation({ text, isOpen, onToggle }) {
           onClick={onToggle}
         >
           <i
-            className={`fas ${
-              isOpen ? "fa-chevron-up" : "fa-chevron-down"
-            }`}
+            className={`fas ${isOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
           />
         </button>
       </div>

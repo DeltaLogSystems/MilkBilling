@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { customerAPI, milkRateAPI } from "../../../services/api";
 import { useAlert } from "../../../Hooks/useAlert";
+import { customerAPI, milkRateAPI } from "../../../services/api";
 import Alert from "../../common/Alert";
 import ConfirmDialog from "../../common/ConfirmDialog";
 
@@ -47,7 +47,7 @@ function CustomerManagement({ text }) {
       const isDuplicate = customerList.some(
         (c) =>
           c.customerName.toLowerCase() === customerName.toLowerCase().trim() &&
-          c.customerId !== customerId
+          c.customerId !== customerId,
       );
 
       if (!isDuplicate) {
@@ -74,7 +74,7 @@ function CustomerManagement({ text }) {
         setErrorMessage("");
       } else if (cleanNumber.length > 0) {
         setWhatsappError(
-          "Enter valid 10-digit WhatsApp number (starting with 6-9)"
+          "Enter valid 10-digit WhatsApp number (starting with 6-9)",
         );
       }
     } else {
@@ -108,10 +108,10 @@ function CustomerManagement({ text }) {
               c.milkType === 0
                 ? "Cow"
                 : c.milkType === 1
-                ? "Buffalo"
-                : "Cow + Buffalo",
+                  ? "Buffalo"
+                  : "Cow + Buffalo",
             pending: c.pendingAmount,
-          }))
+          })),
         );
       }
     } catch (error) {
@@ -141,9 +141,9 @@ function CustomerManagement({ text }) {
   const filteredDeleteCustomers = useMemo(
     () =>
       deleteCustomers.filter((c) =>
-        c.name.toLowerCase().includes(deleteSearch.toLowerCase())
+        c.name.toLowerCase().includes(deleteSearch.toLowerCase()),
       ),
-    [deleteSearch, deleteCustomers]
+    [deleteSearch, deleteCustomers],
   );
 
   const filteredCustomerList = useMemo(
@@ -151,9 +151,9 @@ function CustomerManagement({ text }) {
       customerList.filter(
         (c) =>
           c.customerName.toLowerCase().includes(customerSearch.toLowerCase()) ||
-          (c.whatsAppNo && c.whatsAppNo.includes(customerSearch))
+          (c.whatsAppNo && c.whatsAppNo.includes(customerSearch)),
       ),
-    [customerSearch, customerList]
+    [customerSearch, customerList],
   );
 
   const resetCustomerForm = () => {
@@ -181,8 +181,8 @@ function CustomerManagement({ text }) {
       customer.milkType === 0
         ? "Cow"
         : customer.milkType === 1
-        ? "Buffalo"
-        : "Both"
+          ? "Buffalo"
+          : "Both",
     );
     setUseMasterRate(customer.useMasterRate);
     setCowRate(customer.cowRate || masterCowRate);
@@ -216,7 +216,7 @@ function CustomerManagement({ text }) {
         const cleanNumber = whatsAppNo.replace(/\D/g, "");
         if (!whatsappRegex.test(cleanNumber)) {
           setWhatsappError(
-            "Enter valid 10-digit WhatsApp number (starting with 6-9)"
+            "Enter valid 10-digit WhatsApp number (starting with 6-9)",
           );
           return;
         }
@@ -226,7 +226,7 @@ function CustomerManagement({ text }) {
       const existingCustomer = customerList.find(
         (c) =>
           c.customerName.toLowerCase() === customerName.toLowerCase().trim() &&
-          c.customerId !== customerId
+          c.customerId !== customerId,
       );
       if (existingCustomer) {
         setNameError("Customer with this name already exists");
@@ -294,7 +294,7 @@ function CustomerManagement({ text }) {
         setErrorMessage(
           `Error ${
             customerId === 0 ? "adding" : "updating"
-          } customer. Please check your input.`
+          } customer. Please check your input.`,
         );
       }
     } finally {
@@ -548,8 +548,8 @@ function CustomerManagement({ text }) {
               {loading
                 ? "Saving..."
                 : customerId === 0
-                ? text.saveCustomer
-                : text.updateCustomer}
+                  ? text.saveCustomer
+                  : text.updateCustomer}
             </button>
             <button
               type="button"
@@ -624,8 +624,8 @@ function CustomerManagement({ text }) {
                             {customer.milkType === 0
                               ? text.milkTypeCow
                               : customer.milkType === 1
-                              ? text.milkTypeBuffalo
-                              : text.milkTypeBoth}
+                                ? text.milkTypeBuffalo
+                                : text.milkTypeBoth}
                           </td>
                         </tr>
                       ))
@@ -646,8 +646,8 @@ function CustomerManagement({ text }) {
 
               {/* Results Count */}
               <div className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-                Showing {filteredCustomerList.length} of{" "}
-                {customerList.length} customers
+                Showing {filteredCustomerList.length} of {customerList.length}{" "}
+                customers
               </div>
             </div>
           )}

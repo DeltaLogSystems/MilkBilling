@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "../../../services/api";
 import { useAlert } from "../../../Hooks/useAlert";
+import { authAPI } from "../../../services/api";
 import Alert from "../../common/Alert";
 import ConfirmDialog from "../../common/ConfirmDialog";
 
