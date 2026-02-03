@@ -39,12 +39,28 @@ function AdminUserManagement() {
     try {
       setLoading(true);
       const response = await userManagementAPI.getAllUsers();
-      // API returns { users: [...], totalCount: 10 }
-      if (response && response.users) {
+
+      console.log("Frontend received response:", response);
+
+      // Backend returns: { success: true, data: { users: [...], totalCount: 10 }, message: "..." }
+      if (response && response.success && response.data) {
+        if (response.data.users && Array.isArray(response.data.users)) {
+          console.log("Setting users from response.data.users:", response.data.users);
+          setUsers(response.data.users);
+        } else if (Array.isArray(response.data)) {
+          console.log("Setting users from response.data (array):", response.data);
+          setUsers(response.data);
+        } else {
+          console.log("No users array found in response");
+          setUsers([]);
+        }
+      } else if (response && response.users && Array.isArray(response.users)) {
+        // Direct format: { users: [...], totalCount: 10 }
+        console.log("Setting users from response.users:", response.users);
         setUsers(response.users);
-      } else if (response.success && response.data) {
-        // Fallback for old API format
-        setUsers(Array.isArray(response.data) ? response.data : []);
+      } else {
+        console.log("Unrecognized response format:", response);
+        setUsers([]);
       }
     } catch (error) {
       console.error("Error loading users:", error);
@@ -53,6 +69,7 @@ function AdminUserManagement() {
         title: "Error",
         message: error.response?.data?.message || "Failed to load users.",
       });
+      setUsers([]);
     } finally {
       setLoading(false);
     }
