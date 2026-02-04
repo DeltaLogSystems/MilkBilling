@@ -5,6 +5,7 @@ import { useAlert } from "../../Hooks/useAlert";
 import Alert from "../common/Alert";
 import ConfirmDialog from "../common/ConfirmDialog";
 import Spinner from "../common/Spinner";
+import PasswordResetModal from "./PasswordResetModal";
 
 function AdminUserManagement() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ function AdminUserManagement() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     checkAdminAccess();
@@ -166,36 +169,16 @@ function AdminUserManagement() {
     }
   };
 
-  const handleResetPassword = async (user) => {
-    const newPassword = prompt(`Enter new password for user "${user.userName}":`);
+  const handleResetPassword = (user) => {
+    setSelectedUser(user);
+    setShowPasswordModal(true);
+  };
 
-    if (!newPassword || newPassword.trim() === "") {
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      await showAlert({
-        type: "error",
-        title: "Invalid Password",
-        message: "Password must be at least 6 characters long.",
-      });
-      return;
-    }
-
-    const confirmed = await showConfirm({
-      type: "warning",
-      title: "Reset Password",
-      message: `Are you sure you want to reset password for user "${user.userName}"?`,
-      confirmText: "Reset Password",
-      cancelText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
+  const handlePasswordConfirm = async (newPassword) => {
     try {
       setLoading(true);
       const response = await userManagementAPI.resetPassword(
-        user.userId,
+        selectedUser.userId,
         newPassword
       );
 
@@ -204,8 +187,10 @@ function AdminUserManagement() {
         await showAlert({
           type: "success",
           title: "Success",
-          message: `Password reset successfully for user "${user.userName}"!`,
+          message: `Password reset successfully for user "${selectedUser.userName}"!`,
         });
+        setShowPasswordModal(false);
+        setSelectedUser(null);
       } else {
         await showAlert({
           type: "error",
@@ -223,6 +208,11 @@ function AdminUserManagement() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClosePasswordModal = () => {
+    setShowPasswordModal(false);
+    setSelectedUser(null);
   };
 
   const filteredUsers = users.filter(
@@ -365,12 +355,13 @@ function AdminUserManagement() {
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center hidden lg:table-cell">
                             <button
                               onClick={() => handleResetPassword(user)}
-                              className="px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white text-[10px] rounded transition"
+                              className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-[10px] rounded-md transition-all shadow-md hover:shadow-lg"
                               disabled={loading}
                               title="Reset Password"
                             >
                               <i className="fas fa-key mr-1" />
-                              Reset
+                              <span className="hidden xl:inline">Reset</span>
+                              <i className="fas fa-key xl:hidden" />
                             </button>
                           </td>
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center">
@@ -448,6 +439,15 @@ function AdminUserManagement() {
       {/* Alert and Confirm Dialogs */}
       {alertConfig && <Alert {...alertConfig} />}
       {confirmConfig && <ConfirmDialog {...confirmConfig} />}
+
+      {/* Password Reset Modal */}
+      {showPasswordModal && selectedUser && (
+        <PasswordResetModal
+          user={selectedUser}
+          onClose={handleClosePasswordModal}
+          onConfirm={handlePasswordConfirm}
+        />
+      )}
     </div>
   );
 }
