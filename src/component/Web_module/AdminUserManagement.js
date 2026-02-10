@@ -312,7 +312,7 @@ function AdminUserManagement() {
                       <th className="px-2 md:px-3 py-2 text-left text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase hidden md:table-cell">
                         Email
                       </th>
-                      <th className="px-2 md:px-3 py-2 text-center text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase hidden lg:table-cell">
+                      <th className="px-2 md:px-3 py-2 text-center text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                         Password
                       </th>
                       <th className="px-2 md:px-3 py-2 text-center text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
@@ -352,16 +352,15 @@ function AdminUserManagement() {
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-xs text-gray-600 dark:text-gray-400 hidden md:table-cell">
                             {user.email}
                           </td>
-                          <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center hidden lg:table-cell">
+                          <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center">
                             <button
                               onClick={() => handleResetPassword(user)}
                               className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-[10px] rounded-md transition-all shadow-md hover:shadow-lg"
                               disabled={loading}
                               title="Reset Password"
                             >
-                              <i className="fas fa-key mr-1" />
-                              <span className="hidden xl:inline">Reset</span>
-                              <i className="fas fa-key xl:hidden" />
+                              <i className="fas fa-key" />
+                              <span className="hidden md:inline ml-1">Reset</span>
                             </button>
                           </td>
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center">
