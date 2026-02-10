@@ -170,6 +170,7 @@ function AdminUserManagement() {
   };
 
   const handleResetPassword = (user) => {
+    // Don't modify the search field when opening password reset modal
     setSelectedUser(user);
     setShowPasswordModal(true);
   };
@@ -225,8 +226,8 @@ function AdminUserManagement() {
   );
 
   return (
-    <div className="h-full overflow-auto bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="p-3 md:p-4 space-y-3">
+    <div className="h-full flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3">
         {/* Header Section */}
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-3 md:p-4">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
@@ -286,20 +287,22 @@ function AdminUserManagement() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by username or email..."
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
         </div>
 
         {/* Users Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow overflow-hidden flex flex-col max-h-[calc(100vh-220px)] md:max-h-[calc(100vh-260px)]">
           {loading ? (
             <div className="p-8">
               <Spinner />
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <div className="max-h-[calc(100vh-280px)] overflow-y-auto">
+            <div className="overflow-x-auto overflow-y-auto flex-1">
                 <table className="w-full">
                   <thead className="bg-slate-100 dark:bg-slate-700 sticky top-0 z-10">
                     <tr>
@@ -354,10 +357,11 @@ function AdminUserManagement() {
                           </td>
                           <td className="px-2 md:px-3 py-2 whitespace-nowrap text-center">
                             <button
+                              type="button"
                               onClick={() => handleResetPassword(user)}
                               className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-[10px] rounded-md transition-all shadow-md hover:shadow-lg"
                               disabled={loading}
-                              title="Reset Password"
+                              title={`Reset password for ${user.userName}`}
                             >
                               <i className="fas fa-key" />
                               <span className="hidden md:inline ml-1">Reset</span>
@@ -429,7 +433,6 @@ function AdminUserManagement() {
                     )}
                   </tbody>
                 </table>
-              </div>
             </div>
           )}
         </div>
