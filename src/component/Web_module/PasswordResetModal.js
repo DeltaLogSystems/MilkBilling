@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAlert } from "../../Hooks/useAlert";
 import Alert from "../common/Alert";
 
@@ -8,6 +8,13 @@ function PasswordResetModal({ user, onClose, onConfirm }) {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  // Reset password field when modal opens or user changes
+  useEffect(() => {
+    setNewPassword("");
+    setShowPassword(false);
+    setPasswordStrength(0);
+  }, [user?.userId]);
 
   const generatePassword = () => {
     const length = 12;
@@ -88,8 +95,13 @@ function PasswordResetModal({ user, onClose, onConfirm }) {
                   Reset Password
                 </h3>
                 <p className="text-blue-100 text-sm mt-1">
-                  For user: <strong>{user?.userName}</strong>
+                  User: <strong>{user?.userName}</strong> (ID: {user?.userId})
                 </p>
+                {user?.email && (
+                  <p className="text-blue-100 text-xs mt-0.5">
+                    Email: {user?.email}
+                  </p>
+                )}
               </div>
               <button
                 onClick={onClose}
@@ -113,6 +125,10 @@ function PasswordResetModal({ user, onClose, onConfirm }) {
                   value={newPassword}
                   onChange={(e) => handlePasswordChange(e.target.value)}
                   placeholder="Enter new password"
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
                   className="w-full px-4 py-3 pr-24 rounded-lg border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:border-primary transition"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
