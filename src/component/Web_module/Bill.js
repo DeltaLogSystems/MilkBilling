@@ -137,12 +137,22 @@ function Bill() {
     const numeric = Number(value) || 0;
     setPayments((prev) => {
       const customerState = prev[id];
-      const isFull = numeric >= customerState.totalDue;
+      const totalDue = customerState.totalDue;
+
+      // Validate: Don't allow amount greater than totalDue
+      let finalAmount = numeric;
+      if (numeric > totalDue) {
+        finalAmount = totalDue;
+      }
+
+      // Auto-check fullPayment if amount equals totalDue
+      const isFull = finalAmount >= totalDue && totalDue > 0;
+
       return {
         ...prev,
         [id]: {
           ...customerState,
-          amount: numeric,
+          amount: finalAmount,
           fullPayment: isFull,
         },
       };
@@ -345,12 +355,15 @@ function Bill() {
                       <input
                         type="number"
                         step="0.01"
+                        min="0"
+                        max={totalDue}
                         className="flex-1 h-8 md:h-9 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         value={state.amount || ""}
                         onChange={(e) =>
                           handleAmountChange(c.id, e.target.value)
                         }
                         placeholder="0"
+                        title={`Maximum amount: ₹${totalDue.toFixed(2)}`}
                       />
                     </div>
                   </div>
