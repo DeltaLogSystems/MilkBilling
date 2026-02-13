@@ -58,7 +58,7 @@ function Bill() {
           month,
           null,
           null,
-          null
+          null,
         );
       } else if (activeTab === "quarter") {
         response = await reportAPI.getCustomerBills(
@@ -67,7 +67,7 @@ function Bill() {
           null,
           quarter,
           null,
-          null
+          null,
         );
       } else if (activeTab === "custom" && fromDate && toDate) {
         response = await reportAPI.getCustomerBills(
@@ -76,7 +76,7 @@ function Bill() {
           null,
           null,
           fromDate,
-          toDate
+          toDate,
         );
       }
       console.log("Customer Bills Response:", response);
@@ -86,11 +86,11 @@ function Bill() {
           name: b.customerName,
           currentBill: b.currentBill,
           pending: b.pendingAmount,
-          totalDue: b.totalDue, // ✅ ADD THIS
+          totalDue: b.totalDue,
+          currentBillWithAllowance: b.currentBillWithAllowance,
         }));
 
         setBills(billData);
-
         const paymentsInit = {};
         billData.forEach((c) => {
           paymentsInit[c.id] = {
@@ -111,7 +111,7 @@ function Bill() {
   const filteredCustomers = useMemo(
     () =>
       bills.filter((c) => c.name.toLowerCase().includes(search.toLowerCase())),
-    [search, bills]
+    [search, bills],
   );
 
   const handleSearchChange = (e) => {
@@ -187,7 +187,7 @@ function Bill() {
           const p = payments[c.id];
           return billingAPI.saveBillPayment({
             customerId: c.id,
-            currentBill: c.currentBill,
+            currentBillWithAllowance: c.currentBillWithAllowance,
             previousPending: c.pending,
             amountPaid: p.amount,
             billingPeriod: billingPeriod,
@@ -304,7 +304,7 @@ function Bill() {
                         {c.name}
                       </p>
                       <span className="text-xs md:text-sm bg-primary/10 text-primary px-2 py-0.5 rounded font-semibold">
-                        ₹{totalDue.toFixed(2)}
+                        ₹{totalDue.toFixed(0)}
                       </span>
                     </div>
 
@@ -312,7 +312,7 @@ function Bill() {
                       <span className="text-slate-600 dark:text-slate-400">
                         {text.currentBill}:{" "}
                         <span className="font-semibold text-slate-900 dark:text-white">
-                          ₹{c.currentBill.toFixed(2)}
+                          ₹{c.currentBillWithAllowance.toFixed(0)}
                         </span>
                       </span>
                       <span className="text-slate-600 dark:text-slate-400">
@@ -322,7 +322,7 @@ function Bill() {
                             c.pending > 0 ? "text-red-600" : "text-green-600"
                           }`}
                         >
-                          ₹{c.pending.toFixed(2)}
+                          ₹{c.pending.toFixed(0)}
                         </span>
                       </span>
                       <label className="inline-flex items-center gap-1 text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap">

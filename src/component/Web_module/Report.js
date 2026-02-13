@@ -59,7 +59,7 @@ function Report() {
           month,
           null,
           null,
-          null
+          null,
         );
       } else if (activeTab === "quarter") {
         response = await reportAPI.getCustomerBills(
@@ -68,7 +68,7 @@ function Report() {
           null,
           quarter,
           null,
-          null
+          null,
         );
       } else if (activeTab === "custom" && fromDate && toDate) {
         response = await reportAPI.getCustomerBills(
@@ -77,7 +77,7 @@ function Report() {
           null,
           null,
           fromDate,
-          toDate
+          toDate,
         );
       }
 
@@ -86,10 +86,11 @@ function Report() {
           response.data.map((r) => ({
             id: r.customerId,
             name: r.customerName,
-            currentBill: r.currentBill,
+            currentBillWithAllowance: r.currentBillWithAllowance,
             pending: r.pendingAmount,
             whatsappNo: r.whatsAppNo,
-          }))
+            totalDue: r.totalDue,
+          })),
         );
       }
     } catch (error) {
@@ -123,9 +124,9 @@ function Report() {
   const filteredReports = useMemo(
     () =>
       reports.filter((r) =>
-        r.name.toLowerCase().includes(search.toLowerCase())
+        r.name.toLowerCase().includes(search.toLowerCase()),
       ),
-    [search, reports]
+    [search, reports],
   );
 
   const handleSendReport = async (customer) => {
@@ -314,7 +315,7 @@ function Report() {
         ) : (
           <div className="grid gap-3 md:grid-cols-1 lg:grid-cols-2">
             {filteredReports.map((report) => {
-              const totalDue = report.currentBill + report.pending;
+              const totalDue = report.totalDue;
               const isSending = sendingBillFor === report.id;
 
               return (
@@ -331,7 +332,7 @@ function Report() {
                         {text.currentBill}:{" "}
                       </span>
                       <span className="font-semibold">
-                        ₹{report.currentBill.toFixed(0)}
+                        ₹{report.currentBillWithAllowance.toFixed(0)}
                       </span>
                     </div>
                     <div>
