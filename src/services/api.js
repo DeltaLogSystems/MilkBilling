@@ -345,11 +345,11 @@ export const reportAPI = {
     return response.data;
   },
 
-  sendMonthlyBill: async (customerId) => {
+  sendMonthlyBill: async (customerId, language = 'english') => {
     const userId = getUserId();
     // ✅ Extended timeout for PDF generation
     const response = await api.post(
-      `/Report/send-monthly-bill/${customerId}?userId=${userId}`,
+      `/Report/send-monthly-bill/${customerId}?userId=${userId}&language=${language}`,
       {},
       { timeout: 60000 }, // 60 second timeout for this specific request
     );
