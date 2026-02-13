@@ -142,7 +142,10 @@ function Report() {
     try {
       setSendingBillFor(customer.id); // ✅ Show loading for specific customer
 
-      const response = await reportAPI.sendMonthlyBill(customer.id);
+      // Map language code to full language name for API
+      const languageParam = language === 'en' ? 'english' : 'marathi';
+
+      const response = await reportAPI.sendMonthlyBill(customer.id, languageParam);
 
       if (response && response.success && response.data) {
         const whatsappUrl = response.data.whatsAppUrl;
