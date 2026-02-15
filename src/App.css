@@ -8,107 +8,69 @@ input[type="number"]::-webkit-outer-spin-button {
              
         } */
 
-/* ============================================
-   ENHANCED DATE PICKER STYLING
-   ============================================ */
-
-/* Date Input Field */
+/* Date picker styling */
 input[type="date"] {
   position: relative;
   padding: 10px 40px 10px 12px;
   border-radius: 12px;
-  border: 2px solid #cbd5e1;
-  background: linear-gradient(to bottom, #ffffff, #f8fafc);
+  border: 1px solid #cbd5e1;
+  background-color: white;
   color: #1e293b;
   font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
   width: 100%;
   height: 40px;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-input[type="date"]:hover {
-  border-color: #0095c7;
-  box-shadow: 0 2px 8px rgba(0, 149, 199, 0.15);
-  transform: translateY(-1px);
 }
 
 .dark input[type="date"] {
-  background: linear-gradient(to bottom, rgb(30 41 59), rgb(15 23 42));
+  background-color: rgb(30 41 59);
   color: white;
   border-color: #475569;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.dark input[type="date"]:hover {
-  border-color: #0095c7;
-  box-shadow: 0 2px 8px rgba(0, 149, 199, 0.25);
-}
-
-/* Calendar Icon */
 input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
   right: 12px;
   cursor: pointer;
-  font-size: 20px;
-  padding: 4px;
-  border-radius: 6px;
-  background: rgba(0, 149, 199, 0.1);
-  transition: all 0.2s ease;
-  filter: brightness(0) saturate(100%) invert(46%) sepia(98%) saturate(1234%) hue-rotate(160deg) brightness(95%) contrast(101%);
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  background: rgba(0, 149, 199, 0.2);
-  transform: scale(1.1);
+  font-size: 18px;
+  filter: invert(0.5);
 }
 
 .dark input[type="date"]::-webkit-calendar-picker-indicator {
-  background: rgba(0, 149, 199, 0.15);
-  filter: brightness(0) saturate(100%) invert(67%) sepia(53%) saturate(2090%) hue-rotate(160deg) brightness(95%) contrast(101%);
+  filter: invert(0.8);
 }
 
-.dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  background: rgba(0, 149, 199, 0.25);
-}
-
-/* Focus State */
 input[type="date"]:focus {
   outline: none;
   border-color: #0095c7;
-  box-shadow: 0 0 0 4px rgba(0, 149, 199, 0.15), 0 4px 12px rgba(0, 149, 199, 0.2);
-  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(0, 149, 199, 0.1);
 }
 
-.dark input[type="date"]:focus {
-  box-shadow: 0 0 0 4px rgba(0, 149, 199, 0.25), 0 4px 12px rgba(0, 149, 199, 0.3);
+/* Calendar popup customization - matches application theme (#0095c7) */
+
+/* Style calendar icon with app's primary color */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(46%) sepia(98%) saturate(1234%) hue-rotate(160deg) brightness(95%) contrast(101%);
 }
 
-/* Custom Date Picker Input - Special Styling */
-input[type="date"].date-picker-input {
-  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
-  border: 2px solid #0095c7;
-  color: #0f172a;
-  font-weight: 600;
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(67%) sepia(53%) saturate(2090%) hue-rotate(160deg) brightness(95%) contrast(101%);
 }
 
-.dark input[type="date"].date-picker-input {
-  background: linear-gradient(135deg, rgb(30 41 59) 0%, rgb(15 23 42) 100%);
-  border: 2px solid #0095c7;
-  color: #f0f9ff;
+/* Calendar inner button styling - applies primary color theme to calendar */
+input[type="date"]::-webkit-inner-spin-button {
+  display: none;
 }
 
-/* ============================================
-   CALENDAR POPUP STYLING (Webkit Browsers)
-   ============================================ */
-
-/* Calendar wrapper animation */
-input[type="date"]::-webkit-datetime-edit-fields-wrapper {
-  padding: 0;
+/* Apply primary color to selected/highlighted dates in calendar */
+/* Note: Limited browser support - works best in Chrome/Edge */
+:root {
+  --calendar-primary-color: #0095c7;
+  --calendar-primary-hover: #007ba3;
+  --calendar-primary-light: rgba(0, 149, 199, 0.1);
 }
 
+/* Calendar text field colors */
 input[type="date"]::-webkit-datetime-edit-text {
   color: #64748b;
   padding: 0 2px;
@@ -117,17 +79,15 @@ input[type="date"]::-webkit-datetime-edit-text {
 input[type="date"]::-webkit-datetime-edit-month-field,
 input[type="date"]::-webkit-datetime-edit-day-field,
 input[type="date"]::-webkit-datetime-edit-year-field {
-  color: #0095c7;
-  font-weight: 600;
-  padding: 2px 4px;
-  border-radius: 4px;
-  background: rgba(0, 149, 199, 0.05);
+  color: var(--calendar-primary-color);
+  padding: 2px;
 }
 
 input[type="date"]::-webkit-datetime-edit-month-field:focus,
 input[type="date"]::-webkit-datetime-edit-day-field:focus,
 input[type="date"]::-webkit-datetime-edit-year-field:focus {
-  background: rgba(0, 149, 199, 0.15);
+  background-color: var(--calendar-primary-light);
+  color: var(--calendar-primary-color);
   outline: none;
 }
 
@@ -139,13 +99,6 @@ input[type="date"]::-webkit-datetime-edit-year-field:focus {
 .dark input[type="date"]::-webkit-datetime-edit-day-field,
 .dark input[type="date"]::-webkit-datetime-edit-year-field {
   color: #38bdf8;
-  background: rgba(0, 149, 199, 0.1);
-}
-
-.dark input[type="date"]::-webkit-datetime-edit-month-field:focus,
-.dark input[type="date"]::-webkit-datetime-edit-day-field:focus,
-.dark input[type="date"]::-webkit-datetime-edit-year-field:focus {
-  background: rgba(0, 149, 199, 0.2);
 }
 
 #customDatePicker {

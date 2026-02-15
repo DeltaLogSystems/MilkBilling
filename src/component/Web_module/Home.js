@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
 import { useAlert } from "../../Hooks/useAlert";
 import homeLanguage from "../../language/homeLanguage";
@@ -31,7 +31,6 @@ function HomePage() {
   const text = homeLanguage[language];
   const { showAlert, alertConfig } = useAlert();
 
-  const dateInputRef = useRef(null);
   const [dateFilter, setDateFilter] = useState("today");
   const [selectedDate, setSelectedDate] = useState("");
   const [showCustomPicker, setShowCustomPicker] = useState(false);
@@ -192,12 +191,6 @@ function HomePage() {
     setDateFilter(type);
     if (type === "custom") {
       setShowCustomPicker(true);
-      // Auto-trigger calendar picker after state update
-      setTimeout(() => {
-        if (dateInputRef.current) {
-          dateInputRef.current.showPicker?.();
-        }
-      }, 100);
     } else {
       setShowCustomPicker(false);
     }
@@ -353,13 +346,11 @@ function HomePage() {
                   {text.customDate}
                 </label>
                 <input
-                  ref={dateInputRef}
                   type="date"
-                  className="h-10 flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-0 focus:border-primary date-picker-input"
+                  className="h-10 flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-0 focus:border-primary"
                   value={selectedDate || ""}
                   max={toInputDateValue(today)}
                   onChange={handleCustomDateChange}
-                  onClick={(e) => e.target.showPicker?.()}
                   autoFocus
                 />
               </div>
