@@ -93,7 +93,8 @@ function Dashboard() {
       setMonthlyDataLoading(true);
       const response = await dashboardAPI.getMonthlySoldMilk();
       if (response && response.success) {
-        setMonthlySoldMilk(response.data);
+        // Reverse array to show months in descending order (Feb to Sep)
+        setMonthlySoldMilk(response.data.reverse());
       }
     } catch (error) {
       console.error("Error loading monthly sold milk:", error);
