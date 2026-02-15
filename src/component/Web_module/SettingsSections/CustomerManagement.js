@@ -376,11 +376,14 @@ function CustomerManagement({ text }) {
           </button>
           <button
             type="button"
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition"
-            onClick={() => setCustomerMode("delete")}
+            className="bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 text-sm transition"
+            onClick={() => {
+              setCustomerMode("delete");
+              loadCustomerList();
+            }}
           >
-            <i className="fas fa-trash" />
-            <span>{text.deleteCustomer}</span>
+            <i className="fas fa-edit" />
+            <span>{text.editAndDelete || "Edit and Delete"}</span>
           </button>
         </div>
       )}
@@ -477,9 +480,12 @@ function CustomerManagement({ text }) {
                   <input
                     type="number"
                     step="0.01"
-                    value={cowRate}
+                    value={cowRate === 0 ? "" : cowRate}
                     onChange={(e) =>
-                      setCowRate(parseFloat(e.target.value) || 0)
+                      setCowRate(e.target.value === "" ? "" : parseFloat(e.target.value))
+                    }
+                    onBlur={(e) =>
+                      setCowRate(e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)
                     }
                     className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
@@ -493,9 +499,12 @@ function CustomerManagement({ text }) {
                 <input
                   type="number"
                   step="0.1"
-                  value={cowDefaultLiters}
+                  value={cowDefaultLiters === 0 ? "" : cowDefaultLiters}
                   onChange={(e) =>
-                    setCowDefaultLiters(parseFloat(e.target.value) || 0)
+                    setCowDefaultLiters(e.target.value === "" ? "" : parseFloat(e.target.value))
+                  }
+                  onBlur={(e) =>
+                    setCowDefaultLiters(e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)
                   }
                   className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
@@ -514,9 +523,12 @@ function CustomerManagement({ text }) {
                   <input
                     type="number"
                     step="0.01"
-                    value={buffaloRate}
+                    value={buffaloRate === 0 ? "" : buffaloRate}
                     onChange={(e) =>
-                      setBuffaloRate(parseFloat(e.target.value) || 0)
+                      setBuffaloRate(e.target.value === "" ? "" : parseFloat(e.target.value))
+                    }
+                    onBlur={(e) =>
+                      setBuffaloRate(e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)
                     }
                     className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
@@ -530,9 +542,12 @@ function CustomerManagement({ text }) {
                 <input
                   type="number"
                   step="0.1"
-                  value={buffaloDefaultLiters}
+                  value={buffaloDefaultLiters === 0 ? "" : buffaloDefaultLiters}
                   onChange={(e) =>
-                    setBuffaloDefaultLiters(parseFloat(e.target.value) || 0)
+                    setBuffaloDefaultLiters(e.target.value === "" ? "" : parseFloat(e.target.value))
+                  }
+                  onBlur={(e) =>
+                    setBuffaloDefaultLiters(e.target.value === "" ? 0 : parseFloat(e.target.value) || 0)
                   }
                   className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
@@ -607,14 +622,25 @@ function CustomerManagement({ text }) {
                           className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition"
                         >
                           <td className="px-4 py-3">
-                            <button
-                              type="button"
-                              className="text-primary hover:text-[#007aa3] transition"
-                              onClick={() => handleEditCustomer(customer)}
-                              title="Edit Customer"
-                            >
-                              <i className="fas fa-edit text-lg" />
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <button
+                                type="button"
+                                className="text-primary hover:text-[#007aa3] transition"
+                                onClick={() => handleEditCustomer(customer)}
+                                title="Edit Customer"
+                              >
+                                <i className="fas fa-edit text-lg" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={loading}
+                                className="text-red-600 hover:text-red-700 transition disabled:opacity-50"
+                                onClick={() => handleDeleteCustomer({ id: customer.customerId, name: customer.customerName })}
+                                title="Delete Customer"
+                              >
+                                <i className="fas fa-trash text-lg" />
+                              </button>
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">
                             {customer.customerName}
@@ -657,51 +683,94 @@ function CustomerManagement({ text }) {
       )}
 
       {customerMode === "delete" && (
-        <div className="space-y-3">
+        <div className="space-y-4">
+          {/* Search Box */}
           <div className="relative">
-            <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
+              className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-10 pr-4 text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              placeholder="Search customer by name or phone..."
               type="text"
-              placeholder={text.customerName}
-              className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              value={deleteSearch}
-              onChange={(e) => setDeleteSearch(e.target.value)}
+              value={customerSearch}
+              onChange={handleCustomerSearchChange}
             />
           </div>
 
-          <div className="space-y-3">
-            {filteredDeleteCustomers.map((c) => (
-              <div
-                key={c.id}
-                className="bg-slate-50 dark:bg-slate-700 rounded-lg p-3 text-sm"
-              >
-                <div className="flex justify-between">
-                  <strong className="text-slate-900 dark:text-white">
-                    {c.name}
-                  </strong>
-                  <small className="text-slate-600 dark:text-slate-300">
-                    {c.milkType}
-                  </small>
-                </div>
-                <div className="flex justify-between mt-2">
-                  <span
-                    className={`font-bold ${
-                      c.pending > 0 ? "text-red-600" : "text-green-600"
-                    }`}
-                  >
-                    ₹{c.pending} {text.pendingSuffix}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={loading}
-                    className="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition disabled:opacity-50"
-                    onClick={() => handleDeleteCustomer(c)}
-                  >
-                    {text.delete}
-                  </button>
-                </div>
-              </div>
-            ))}
+          {/* Customer List Table */}
+          <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-600 max-h-96 overflow-y-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs uppercase bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 sticky top-0">
+                <tr>
+                  <th className="px-4 py-3">{text.actions || "Actions"}</th>
+                  <th className="px-4 py-3">{text.customerName}</th>
+                  <th className="px-4 py-3">{text.whatsappNo}</th>
+                  <th className="px-4 py-3">{text.milkType}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCustomerList.length > 0 ? (
+                  filteredCustomerList.map((customer) => (
+                    <tr
+                      key={customer.customerId}
+                      className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            className="text-primary hover:text-[#007aa3] transition"
+                            onClick={() => {
+                              handleEditCustomer(customer);
+                              setCustomerMode("add");
+                            }}
+                            title="Edit Customer"
+                          >
+                            <i className="fas fa-edit text-lg" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={loading}
+                            className="text-red-600 hover:text-red-700 transition disabled:opacity-50"
+                            onClick={() => handleDeleteCustomer({ id: customer.customerId, name: customer.customerName })}
+                            title="Delete Customer"
+                          >
+                            <i className="fas fa-trash text-lg" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-900 dark:text-white font-medium">
+                        {customer.customerName}
+                      </td>
+                      <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                        {customer.whatsAppNo || "N/A"}
+                      </td>
+                      <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                        {customer.milkType === 0
+                          ? text.milkTypeCow
+                          : customer.milkType === 1
+                            ? text.milkTypeBuffalo
+                            : text.milkTypeCow}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="4"
+                      className="px-4 py-8 text-center text-slate-500 dark:text-slate-400"
+                    >
+                      <i className="fas fa-search text-3xl mb-2 block" />
+                      <p>No customers found matching your search</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Results Count */}
+          <div className="text-sm text-slate-600 dark:text-slate-400">
+            Showing {filteredCustomerList.length} of {customerList.length} customers
           </div>
 
           <button
