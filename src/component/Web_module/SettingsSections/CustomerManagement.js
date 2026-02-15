@@ -109,7 +109,7 @@ function CustomerManagement({ text }) {
                 ? "Cow"
                 : c.milkType === 1
                   ? "Buffalo"
-                  : "Cow + Buffalo",
+                  : "Cow", // "Cow + Buffalo" option removed
             pending: c.pendingAmount,
           })),
         );
@@ -182,7 +182,7 @@ function CustomerManagement({ text }) {
         ? "Cow"
         : customer.milkType === 1
           ? "Buffalo"
-          : "Both",
+          : "Cow", // "Both" option removed, defaulting to "Cow"
     );
     setUseMasterRate(customer.useMasterRate);
     setCowRate(customer.cowRate || masterCowRate);
@@ -246,9 +246,9 @@ function CustomerManagement({ text }) {
         cowRate: useMasterRate ? null : cowRate,
         buffaloRate: useMasterRate ? null : buffaloRate,
         cowDefaultLiters:
-          milkType === "Cow" || milkType === "Both" ? cowDefaultLiters : null,
+          milkType === "Cow" /* || milkType === "Both" */ ? cowDefaultLiters : null,
         buffaloDefaultLiters:
-          milkType === "Buffalo" || milkType === "Both"
+          milkType === "Buffalo" /* || milkType === "Both" */
             ? buffaloDefaultLiters
             : null,
         useMasterRate,
@@ -448,7 +448,7 @@ function CustomerManagement({ text }) {
               >
                 <option value="Cow">{text.milkTypeCow}</option>
                 <option value="Buffalo">{text.milkTypeBuffalo}</option>
-                <option value="Both">{text.milkTypeBoth}</option>
+                {/* <option value="Both">{text.milkTypeBoth}</option> */}
               </select>
             </div>
 
@@ -466,7 +466,8 @@ function CustomerManagement({ text }) {
             </div>
           </div>
 
-          {(milkType === "Cow" || milkType === "Both") && (
+          {/* (milkType === "Cow" || milkType === "Both") && ( */}
+          {milkType === "Cow" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!useMasterRate && (
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
@@ -502,7 +503,8 @@ function CustomerManagement({ text }) {
             </div>
           )}
 
-          {(milkType === "Buffalo" || milkType === "Both") && (
+          {/* (milkType === "Buffalo" || milkType === "Both") && ( */}
+          {milkType === "Buffalo" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!useMasterRate && (
                 <div className="flex flex-col md:flex-row md:items-center gap-2">
@@ -625,7 +627,7 @@ function CustomerManagement({ text }) {
                               ? text.milkTypeCow
                               : customer.milkType === 1
                                 ? text.milkTypeBuffalo
-                                : text.milkTypeBoth}
+                                : text.milkTypeCow} {/* milkTypeBoth option removed */}
                           </td>
                         </tr>
                       ))

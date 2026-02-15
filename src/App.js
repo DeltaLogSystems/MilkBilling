@@ -35,6 +35,22 @@ function App() {
     };
   }, []);
 
+  // Global auto-calendar functionality for all date inputs
+  useEffect(() => {
+    const handleDateInputClick = (e) => {
+      if (e.target.type === "date") {
+        e.target.showPicker?.();
+      }
+    };
+
+    // Add click event listener to document for all date inputs
+    document.addEventListener("click", handleDateInputClick);
+
+    return () => {
+      document.removeEventListener("click", handleDateInputClick);
+    };
+  }, []);
+
   return (
     <LanguageProvider>
       <Routes>
